@@ -243,11 +243,7 @@ def clone_mailbox(mailbox: str, into: str, indexer: str = LOCAL_INDEXER) -> dict
     work = Path(into) / "work"
     if work.exists():
         shutil.rmtree(work)
-    ref = next(iter(built["refs"]), "")
-    if ref:
-        subprocess.check_call(
-            ["git", "clone", "--quiet", "--branch", Path(ref).name, built["git_dir"], str(work)]
-        )
+    built["branch"] = _checkout_work(built["git_dir"], built["refs"], str(work))
     built["work"] = str(work)
     built["mailbox"] = mailbox
     return built
@@ -764,6 +760,51 @@ def _frames_from_indexer(mailbox: str, indexer: str) -> list[dict]:
             break
     rows.sort()
     return [_parse_frame(note) for _, _, note in rows]
+
+
+def _preferred_ref(refs: dict[str, str], git_dir: str) -> str:
+    """The branch a clone should open. A name may contain a slash."""
+    heads = [(name, oid) for name, oid in refs.items() if name.startswith("refs/heads/")]
+    if not heads:
+        return next(iter(refs), "")
+    tips = []
+    for name, oid in heads:
+        ancestor = False
+        for _other_name, other in heads:
+            if other == oid:
+                continue
+            check = subprocess.run(
+                ["git", "--git-dir", git_dir, "merge-base", "--is-ancestor", oid, other],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            if check.returncode == 0:
+                ancestor = True
+                break
+        if not ancestor:
+            tips.append((name, oid))
+    if not tips:
+        tips = heads
+
+    def stamp(oid: str) -> int:
+        when = subprocess.check_output(
+            ["git", "--git-dir", git_dir, "log", "-1", "--format=%ct", oid],
+            text=True,
+        ).strip()
+        return int(when or "0")
+
+    name, _oid = max(tips, key=lambda item: (stamp(item[1]), item[0]))
+    return name
+
+
+def _checkout_work(git_dir: str, refs: dict[str, str], work: str) -> str:
+    ref = _preferred_ref(refs, git_dir)
+    if not ref:
+        return ""
+    subprocess.check_call(["git", "--git-dir", git_dir, "symbolic-ref", "HEAD", ref])
+    branch = ref.removeprefix("refs/heads/")
+    subprocess.check_call(["git", "clone", "--quiet", "--branch", branch, git_dir, work])
+    return branch
 
 
 def _overview(root: Path, receipt: dict) -> dict:

@@ -99,6 +99,35 @@ class FeeAndPlan(unittest.TestCase):
             self.assertEqual(built["fsck_code"], 0)
             self.assertEqual(built["refs"]["refs/heads/main"], head)
 
+    def test_checkout_keeps_a_slash_in_the_branch_name(self) -> None:
+        # REQ-algit-3
+        from algit.command import _checkout_work
+
+        with TemporaryDirectory() as tmp:
+            repo = make_repo(Path(tmp), {"README.md": b"hello\n"})
+            git(repo, "checkout", "-q", "-b", "feature/slash")
+            (Path(repo) / "extra.txt").write_text("slash\n")
+            git(repo, "add", "extra.txt")
+            git(repo, "commit", "-q", "-m", "slash branch")
+            tip = git(repo, "rev-parse", "HEAD")
+            plan = plan_repository(repo, env={})
+            frames = [
+                {
+                    "kind": note[5],
+                    "oid": note[7:27],
+                    "index": int.from_bytes(note[47:49], "big"),
+                    "count": int.from_bytes(note[49:51], "big"),
+                    "payload": note[51:],
+                }
+                for note in plan.notes()
+            ]
+            built = materialize_frames(frames, str(Path(tmp) / "out"))
+            work = str(Path(tmp) / "out" / "work")
+            branch = _checkout_work(built["git_dir"], built["refs"], work)
+            self.assertEqual(branch, "feature/slash")
+            self.assertEqual(git(work, "rev-parse", "HEAD"), tip)
+            self.assertEqual(git(work, "rev-parse", "--abbrev-ref", "HEAD"), "feature/slash")
+
     def test_mainnet_quote_submits_nothing(self) -> None:
         # REQ-algit-2 REQ-algit-7
         with TemporaryDirectory() as tmp:

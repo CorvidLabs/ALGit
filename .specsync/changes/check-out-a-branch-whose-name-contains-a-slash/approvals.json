@@ -1,0 +1,40 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1792946694,
+      "digest": "f8bb0089b563e361a91a93f0df413130c98ce7dee73503e73e63bc18f249a35e",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "check-out-a-branch-whose-name-contains-a-slash",
+        "title": "Check out a branch whose name contains a slash",
+        "description": "Check out a branch whose name contains a slash",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "algit"
+        ],
+        "affected_paths": [
+          "py/algit/command.py",
+          "tests/test_remote.py"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "I can clone a mailbox whose branch name contains a slash, and the work tree is on that branch."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "algit": "b2240ebb0fa4c677ad16410e4105f3f5f42853ba45e1c2f27a8890b937deb59d"
+      }
+    }
+  ],
+  "reopenings": []
+}
