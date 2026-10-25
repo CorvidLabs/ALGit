@@ -1,6 +1,6 @@
 ---
 id: show-the-algo-total-and-the-repository-size-on-the-page
-state: implementing
+state: archived
 type: feature
 base_commit: e47567fd8ff21c8aeae58084c27bbbe89aa5be62
 ---

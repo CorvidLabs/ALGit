@@ -7,11 +7,11 @@
   "title": "Show the ALGO total and the repository size on the page",
   "description": "Show the ALGO total and the repository size on the page",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "e47567fd8ff21c8aeae58084c27bbbe89aa5be62",
   "created_at": 1792948951,
-  "updated_at": 1792949052,
+  "updated_at": 1792949149,
   "affected_specs": [
     "algit"
   ],
