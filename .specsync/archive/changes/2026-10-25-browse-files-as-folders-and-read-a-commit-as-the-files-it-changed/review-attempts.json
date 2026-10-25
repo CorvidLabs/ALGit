@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "browse-files-as-folders-and-read-a-commit-as-the-files-it-changed",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "1548f750dac3ca9986715104bbc75b14b733db43",
+      "contract_digest": "7f28c29295fba7367f761198c4c02a7b04b2d3f5882bcfda32b7941f6f656989",
+      "execution_digest": "13a60f6d04865ccdf281974a027748d543b16feb29ff883aa8e0e1f71915a603",
+      "workspace_digest": "63fffc0e35c8318ca1745793959e5ce7a4c67c63a7457ec002223dd74a08f599",
+      "timestamp": 1792947760
+    }
+  ]
+}

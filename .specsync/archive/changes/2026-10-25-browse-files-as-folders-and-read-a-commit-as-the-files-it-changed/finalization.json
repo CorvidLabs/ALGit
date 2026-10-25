@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "browse-files-as-folders-and-read-a-commit-as-the-files-it-changed",
+  "implementation_commit": "1548f750dac3ca9986715104bbc75b14b733db43",
+  "implementation_tree": "346e52b4b633788093d309e5d02875cc13a13628",
+  "contract_digest": "7f28c29295fba7367f761198c4c02a7b04b2d3f5882bcfda32b7941f6f656989",
+  "workspace_digest": "63fffc0e35c8318ca1745793959e5ce7a4c67c63a7457ec002223dd74a08f599",
+  "closing_digest": "8b0e6d60e105786f46cb90795aeb3c4c52b97e74044a0f8e5f547bbbdfb7c73d",
+  "review_digest": "2fcab0b5d28d084986bdd9802496f076ddd584771640228152470dedb2caadd5",
+  "finalization_digest": "b3254a8f26a88e373c6212c5047adcfb09a2b7c2d7b282001284a35fc17bacf8",
+  "timestamp": 1792947818
+}

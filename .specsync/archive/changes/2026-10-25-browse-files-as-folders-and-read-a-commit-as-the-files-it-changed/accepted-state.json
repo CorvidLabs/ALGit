@@ -7,11 +7,11 @@
   "title": "Browse files as folders and read a commit as the files it changed",
   "description": "Browse files as folders and read a commit as the files it changed",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "72a6bd9c029567db70a2508efb780070e30d9571",
   "created_at": 1792947613,
-  "updated_at": 1792947741,
+  "updated_at": 1792947818,
   "affected_specs": [
     "algit"
   ],
