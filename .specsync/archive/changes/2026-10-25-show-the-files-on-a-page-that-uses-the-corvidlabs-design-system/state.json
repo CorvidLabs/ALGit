@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "show-the-files-on-a-page-that-uses-the-corvidlabs-design-system",
+  "slug": "show-the-files-on-a-page-that-uses-the-corvidlabs-design-system",
+  "title": "Show the files on a page that uses the CorvidLabs design system",
+  "description": "Show the files on a page that uses the CorvidLabs design system",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "fb57e4464108ec533230761f33aeae3db7066fad",
+  "created_at": 1792946961,
+  "updated_at": 1792947275,
+  "affected_specs": [
+    "algit"
+  ],
+  "affected_paths": [
+    "py/algit/command.py",
+    "tests/test_remote.py",
+    "py/algit/brand"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The page I open shows the files and the commits.",
+    "The page uses the CorvidLabs design system."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "yes"
+  }
+}

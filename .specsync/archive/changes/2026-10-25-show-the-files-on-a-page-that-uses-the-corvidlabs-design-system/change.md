@@ -1,6 +1,6 @@
 ---
 id: show-the-files-on-a-page-that-uses-the-corvidlabs-design-system
-state: implementing
+state: archived
 type: bug_fix
 base_commit: fb57e4464108ec533230761f33aeae3db7066fad
 ---
