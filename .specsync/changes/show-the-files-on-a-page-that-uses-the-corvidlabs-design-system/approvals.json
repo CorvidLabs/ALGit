@@ -1,0 +1,42 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1792946992,
+      "digest": "85e59e9d52af2c6a5a5e83be00072045bed827366c76ce6572d4839d3880098f",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "show-the-files-on-a-page-that-uses-the-corvidlabs-design-system",
+        "title": "Show the files on a page that uses the CorvidLabs design system",
+        "description": "Show the files on a page that uses the CorvidLabs design system",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "algit"
+        ],
+        "affected_paths": [
+          "py/algit/brand",
+          "py/algit/command.py",
+          "tests/test_remote.py"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The page I open shows the files and the commits.",
+          "The page uses the CorvidLabs design system."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "algit": "1c153d9f7d57dd90ba53d15012a5a4f6e1f40482189b83fffecf5be2ff12e88c"
+      }
+    }
+  ],
+  "reopenings": []
+}

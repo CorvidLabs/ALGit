@@ -199,7 +199,7 @@ class Pin(unittest.TestCase):
             text = path.read_text()
             self.assertNotIn("eyJ", text)
             self.assertNotIn("mypinata", text.lower())
-            self.assertNotIn("corvid", text.lower())
+            self.assertNotIn("corvidlabs", text.lower())
 
 
 class Page(unittest.TestCase):
@@ -214,6 +214,15 @@ class Page(unittest.TestCase):
                     html = response.read().decode()
                 self.assertIn("<main", html)
                 self.assertIn("Skip to the commit", html)
+                self.assertIn('type="module"', html)
+                self.assertIn("/brand/tokens.css", html)
+                self.assertIn("Schibsted+Grotesk", html)
+                self.assertIn("data-corvid-theme-toggle", html)
+                self.assertNotIn("Avenir Next", html)
+                with urllib.request.urlopen(f"http://127.0.0.1:{port}/brand/tokens.css") as tokens:
+                    sheet = tokens.read().decode()
+                self.assertIn("--paper", sheet)
+                self.assertIn("#0E6F66", sheet)
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/file?path=README.md") as response:
                     self.assertEqual(response.read(), b"hello page\n")
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/diff?rev=HEAD") as response:

@@ -42,6 +42,12 @@ LOCAL_KMD = "http://127.0.0.1:4002"
 LOCAL_INDEXER = "http://127.0.0.1:8980"
 MAINNET_ALGOD = "https://mainnet-api.algonode.cloud"
 PIN_ENDPOINT = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+_BRAND = Path(__file__).resolve().parent / "brand"
+_BRAND_TYPES = {
+    "tokens.css": "text/css; charset=utf-8",
+    "theme.js": "text/javascript; charset=utf-8",
+    "logo-mark.svg": "image/svg+xml",
+}
 
 USAGE = """algit push [--network localnet|mainnet] [--yes] [--repo PATH]
 algit clone <mailbox> [--into PATH] [--network localnet]
@@ -263,6 +269,15 @@ def serve(repo: str, host: str = "127.0.0.1", port: int = 4711, mailbox: str = "
             parsed = urlparse(self.path)
             if parsed.path == "/":
                 self._send(200, "text/html; charset=utf-8", _page(receipt).encode())
+                return
+            if parsed.path.startswith("/brand/"):
+                name = parsed.path.removeprefix("/brand/")
+                kind = _BRAND_TYPES.get(name)
+                brand = _BRAND / name
+                if kind is None or not brand.is_file():
+                    self._send(404, "text/plain; charset=utf-8", b"not found")
+                    return
+                self._send(200, kind, brand.read_bytes())
                 return
             if parsed.path == "/api/overview":
                 self._send(200, "application/json", json.dumps(_overview(root, receipt)).encode())
@@ -850,23 +865,24 @@ PAGE = """<!DOCTYPE html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ALGit</title>
+  <script>
+    (() => {
+      try {
+        const q = new URLSearchParams(location.search).get("theme");
+        const t = q || localStorage.getItem("corvid-theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/brand/tokens.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;900&family=Spline+Sans+Mono:wght@400;500&display=swap">
   <style>
-    :root {
-      color-scheme: light;
-      --field: #e4ebf0;
-      --ink: #17202b;
-      --rail: #1b3040;
-      --rail-text: #e7eef3;
-      --rust: #b8431f;
-      --line: #c5d2db;
-      --focus: #b8431f;
-    }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; }
     body {
-      background: var(--field);
+      background: var(--paper);
       color: var(--ink);
-      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-family: var(--font-display);
       font-size: 1.05rem;
       line-height: 1.45;
     }
@@ -886,23 +902,46 @@ PAGE = """<!DOCTYPE html>
       top: 0.5rem;
       left: 0.5rem;
       z-index: 2;
-      background: var(--field);
+      background: var(--paper);
       color: var(--ink);
       padding: 0.4rem 0.7rem;
     }
     :where(a, button):focus-visible {
-      outline: 3px solid var(--focus);
+      outline: 3px solid var(--sheen);
       outline-offset: 3px;
     }
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.25rem;
+      background: var(--header-bg);
+    }
+    .lockup { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .mark { width: 2rem; height: 2rem; color: var(--ink); flex: none; }
+    .product { margin: 0; font-weight: 700; font-size: 1.25rem; }
+    .branch { margin: 0; color: var(--sheen-strong); }
+    .mailbox {
+      margin: 0;
+      margin-inline-start: auto;
+      overflow-wrap: anywhere;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      max-width: 28rem;
+    }
+    .sheen-rule { height: 4px; background: var(--iridescence); }
     .shell {
       display: grid;
-      grid-template-columns: 16rem minmax(0, 1fr);
+      grid-template-columns: 18rem minmax(0, 1fr);
       grid-template-areas: "rail main";
-      min-height: 100dvh;
+      min-height: calc(100dvh - 4.5rem);
     }
     .rail { grid-area: rail; }
     main { grid-area: main; }
     @media (max-width: 40rem) {
+      .top { flex-wrap: wrap; }
+      .mailbox { margin-inline-start: 0; max-width: none; }
       .shell {
         grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
@@ -911,50 +950,89 @@ PAGE = """<!DOCTYPE html>
       }
     }
     .rail {
-      background: var(--rail);
-      color: var(--rail-text);
-      padding: 1.25rem 1rem 2rem;
+      background: var(--surface);
+      border-inline-end: 1px solid var(--hairline);
+      padding: 1rem 1rem 2rem;
     }
-    .product { margin: 0; font-size: 1.4rem; }
-    .branch { margin: 0.2rem 0 0.8rem; color: var(--rust); font-size: 1.15rem; }
-    .mailbox { margin: 0 0 1.2rem; overflow-wrap: anywhere; font-family: ui-monospace, "SF Mono", monospace; font-size: 0.78rem; }
-    .rail h2 { font-size: 1rem; font-weight: 600; margin: 1.2rem 0 0.4rem; }
+    .rail h2 { font-size: 0.95rem; font-weight: 700; margin: 1rem 0 0.35rem; }
     .rail ul { list-style: none; margin: 0; padding: 0; }
     .rail a {
       display: block;
       min-block-size: 1.5rem;
-      padding: 0.2rem 0;
-      color: var(--rail-text);
+      padding: 0.28rem 0;
+      color: var(--ink);
       text-decoration: none;
       overflow-wrap: anywhere;
     }
-    .rail a[aria-current="page"] { text-decoration: underline; }
+    .rail a[aria-current="page"] { color: var(--sheen-strong); }
     main { padding: 1.5rem 1.6rem 3rem; min-width: 0; }
     h1 {
-      font-family: Charter, "Iowan Old Style", Georgia, serif;
-      font-weight: 500;
+      font-family: var(--font-display);
+      font-weight: 700;
       font-size: 2rem;
       line-height: 1.2;
       margin: 0 0 0.6rem;
     }
-    #meta { margin: 0 0 1rem; }
+    #meta { margin: 0 0 1rem; color: var(--text-muted); }
     pre {
       margin: 0;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
       white-space: pre-wrap;
       overflow-wrap: anywhere;
-      font-family: ui-monospace, "SF Mono", monospace;
+      font-family: var(--font-mono);
       font-size: 0.86rem;
-      line-height: 1.4;
+      line-height: 1.45;
     }
+    .corvid-theme-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; padding: 0; flex: none;
+      background: none; border: 1px solid var(--ink-12); color: var(--ink-70);
+      cursor: pointer;
+    }
+    .corvid-theme-toggle:hover { border-color: var(--sheen); color: var(--sheen); }
+    .corvid-theme-toggle:focus-visible { outline: 2px solid var(--sheen); outline-offset: 2px; }
+    .corvid-theme-toggle svg { width: 17px; height: 17px; }
+    .corvid-theme-toggle .moon { display: none; }
+    :root[data-theme="dark"] .corvid-theme-toggle .sun { display: none; }
+    :root[data-theme="dark"] .corvid-theme-toggle .moon { display: inline; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .corvid-theme-toggle .sun { display: none; }
+      :root:not([data-theme="light"]) .corvid-theme-toggle .moon { display: inline; }
+    }
+    :root[data-theme="light"] .corvid-theme-toggle .sun { display: inline; }
+    :root[data-theme="light"] .corvid-theme-toggle .moon { display: none; }
   </style>
 </head>
 <body>
   <a class="skip visually-hidden" href="#content">Skip to the commit</a>
+  <header class="top">
+    <div class="lockup">
+      <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="24" cy="32" r="18" fill="currentColor"/>
+        <path d="M33 21.5 L58.5 29.5 L33 39.5 Z" fill="currentColor"/>
+        <circle cx="27.5" cy="26" r="3" fill="var(--paper)"/>
+      </svg>
+      <div>
+        <p class="product">ALGit</p>
+        <p class="branch" id="branch"></p>
+      </div>
+    </div>
+    <p class="mailbox" id="mailbox"></p>
+    <button type="button" class="corvid-theme-toggle" data-corvid-theme-toggle aria-pressed="false" aria-label="Switch to dark theme" title="Switch theme">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.2" />
+        <path d="M12 2.6v2.4M12 19v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.6 12h2.4M19 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" />
+      </svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.8A8.6 8.6 0 1 1 11.2 3a6.7 6.7 0 0 0 9.8 9.8z" />
+      </svg>
+    </button>
+  </header>
+  <div class="sheen-rule" aria-hidden="true"></div>
   <div class="shell">
     <nav class="rail" aria-label="Repository">
-      <p class="product">ALGit</p>
-      <p class="branch" id="branch"></p>
-      <p class="mailbox" id="mailbox"></p>
       <h2>Files</h2>
       <ul id="files"></ul>
       <h2>Commits</h2>
@@ -966,7 +1044,8 @@ PAGE = """<!DOCTYPE html>
       <pre id="body"></pre>
     </main>
   </div>
-  <script>
+  <script defer src="/brand/theme.js"></script>
+  <script type="module">
     const receipt = /*RECEIPT*/;
     const files = document.getElementById("files");
     const commits = document.getElementById("commits");
@@ -1012,7 +1091,13 @@ PAGE = """<!DOCTYPE html>
       body.textContent = await response.text();
     }
 
-    const overview = await fetch("/api/overview").then((response) => response.json());
+    const overviewResponse = await fetch("/api/overview");
+    if (!overviewResponse.ok) {
+      subject.textContent = "The repository did not load.";
+      body.textContent = await overviewResponse.text();
+      throw new Error("overview");
+    }
+    const overview = await overviewResponse.json();
     branch.textContent = overview.branch;
     mailbox.textContent = overview.mailbox || "This page is on this machine.";
     document.title = overview.branch + " · ALGit";
