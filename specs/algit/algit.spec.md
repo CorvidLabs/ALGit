@@ -1,6 +1,6 @@
 ---
 module: algit
-version: 6
+version: 7
 status: draft
 files:
   - py/algit/__init__.py
@@ -9,6 +9,9 @@ files:
   - py/algit/brand/tokens.css
   - py/algit/brand/theme.js
   - py/algit/brand/logo-mark.svg
+  - py/algit/brand/page.css
+  - py/algit/brand/page.js
+  - py/algit/viewdata.py
 ---
 
 # algit
@@ -30,6 +33,10 @@ Push a git repository onto Algorand LocalNet, quote the same push on MainNet wit
 | `pin_heavy_blobs` | function | Upload blobs over 256 KiB with PINATA_JWT. |
 | `serve` | function | Serve the local page for a cloned repository. |
 | `main` | function | Command line entry for push, clone, and serve. |
+| `blob_sizes` | function | Map each file path to its size in bytes. |
+| `file_tree` | function | Nest those paths into folders, with a size on every node. |
+| `commit_list` | function | List commits with a count of the paths each one changed. |
+| `overview` | function | The branch, the tree, the bytes, the commits, and the receipt account. |
 
 ## Invariants
 
@@ -37,7 +44,7 @@ A public note is an ALGT frame of version 1. The sha1 of a stored canonical obje
 
 ## Behavioral Examples
 
-A one-commit repository becomes one set of object notes plus one ref note. Materializing those notes produces a bare repository whose git fsck exits 0 and whose branch points at the same commit. When the mailbox has more than one branch, the work tree checks out the branch that is not an ancestor of another branch, and a slash in that name is kept. Asking for a MainNet quote prints microALGO and ALGO and leaves the chain untouched. A blob of 256 KiB plus one byte is posted to the caller's Pinata gateway. The page script is valid JavaScript. It loads the CorvidLabs design-system tokens, the sun/moon toggle, Schibsted Grotesk, and Spline Sans Mono. Files are folders, each file shows its size, and a commit lists the files it changed. The page also shows the ALGO the notes cost, the microALGO, the note count, the round span, and the total size of the files.
+A one-commit repository becomes one set of object notes plus one ref note. Materializing those notes produces a bare repository whose git fsck exits 0 and whose branch points at the same commit. When the mailbox has more than one branch, the work tree checks out the branch that is not an ancestor of another branch, and a slash in that name is kept. Asking for a MainNet quote prints microALGO and ALGO and leaves the chain untouched. A blob of 256 KiB plus one byte is posted to the caller's Pinata gateway. The page loads `/brand/page.js`, which is valid JavaScript, plus the CorvidLabs tokens, the sun/moon toggle, Schibsted Grotesk, and Spline Sans Mono. Files are folders. A folder whose name starts with a dot starts closed. Each file shows its size. A commit shows a short hash and then the files it changed. The strip shows the ALGO the notes cost, the microALGO, the note count, the round span, and the total size. Pressing `/` focuses the file finder.
 
 ## Error Cases
 
@@ -56,3 +63,4 @@ Python 3.11 or newer. py-algorand-sdk 2.12, because 2.11.1 rejects a note over 1
 | 2026-10-25 | browse-files-as-folders-and-read-a-commit-as-the-files-it-changed: Browse files as folders and read a commit as the files it changed |
 | 2026-10-25 | make-the-page-script-valid-so-the-folders-render: Make the page script valid so the folders render |
 | 2026-10-25 | show-the-algo-total-and-the-repository-size-on-the-page: Show the ALGO total and the repository size on the page |
+| 2026-10-25 | read-the-repository-as-a-ledger-with-hashes-folders-and-the-cost: Read the repository as a ledger with hashes, folders, and the cost |

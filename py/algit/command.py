@@ -45,7 +45,9 @@ PIN_ENDPOINT = "https://api.pinata.cloud/pinning/pinFileToIPFS"
 _BRAND = Path(__file__).resolve().parent / "brand"
 _BRAND_TYPES = {
     "tokens.css": "text/css; charset=utf-8",
+    "page.css": "text/css; charset=utf-8",
     "theme.js": "text/javascript; charset=utf-8",
+    "page.js": "text/javascript; charset=utf-8",
     "logo-mark.svg": "image/svg+xml",
 }
 
@@ -851,35 +853,9 @@ def _checkout_work(git_dir: str, refs: dict[str, str], work: str) -> str:
 
 
 def _overview(root: Path, receipt: dict) -> dict:
-    branch = _git(str(root), "rev-parse", "--abbrev-ref", "HEAD").decode().strip()
-    log = _git(str(root), "log", "--format=%H%x1f%an%x1f%at%x1f%s")
-    commits = []
-    for line in log.splitlines():
-        oid, author, when, subject = line.decode().split("\x1f", 3)
-        commits.append({"id": oid, "author": author, "at": int(when), "subject": subject})
-    sizes = _blob_sizes(root)
-    files = sorted(sizes)
-    rounds = list(receipt.get("rounds") or [])
-    micro = receipt.get("microalgo")
-    return {
-        "branch": branch,
-        "mailbox": receipt.get("mailbox", ""),
-        "network": receipt.get("network", ""),
-        "commits": commits,
-        "files": files,
-        "tree": _file_tree(files, sizes),
-        "bytes": sum(sizes.values()),
-        "account": {
-            "microalgo": micro,
-            "algo": None if micro is None else micro / 1_000_000,
-            "notes": receipt.get("notes"),
-            "rounds": len(rounds),
-            "firstRound": rounds[0] if rounds else None,
-            "lastRound": rounds[-1] if rounds else None,
-            "head": receipt.get("head") or "",
-            "pinned": receipt.get("pinned") or 0,
-        },
-    }
+    from algit.viewdata import overview
+
+    return overview(str(root), receipt)
 
 
 def _blob_sizes(root: Path) -> dict[str, int]:
@@ -990,6 +966,7 @@ PAGE = """<!DOCTYPE html>
     })();
   </script>
   <link rel="stylesheet" href="/brand/tokens.css">
+  <link rel="stylesheet" href="/brand/page.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;900&family=Spline+Sans+Mono:wght@400;500&display=swap">
   <style>
     * { box-sizing: border-box; }
@@ -1243,277 +1220,7 @@ PAGE = """<!DOCTYPE html>
     </main>
   </div>
   <script defer src="/brand/theme.js"></script>
-  <script type="module">
-    const receipt = /*RECEIPT*/;
-    const files = document.getElementById("files");
-    const commits = document.getElementById("commits");
-    const subject = document.getElementById("subject");
-    const meta = document.getElementById("meta");
-    const body = document.getElementById("body");
-    const crumbs = document.getElementById("crumbs");
-    const facts = document.getElementById("facts");
-    const branch = document.getElementById("branch");
-    const mailbox = document.getElementById("mailbox");
-    const find = document.getElementById("find");
-    let tree = [];
-    let fileAnchor = null;
-
-    function mark(anchor) {
-      for (const node of document.querySelectorAll(".rail a")) node.removeAttribute("aria-current");
-      if (anchor) anchor.setAttribute("aria-current", "page");
-    }
-
-    function setCrumbs(path) {
-      crumbs.replaceChildren();
-      if (!path) return;
-      path.split("/").forEach((part, index) => {
-        if (index) {
-          const sep = document.createElement("span");
-          sep.textContent = "/";
-          crumbs.append(sep);
-        }
-        const bit = document.createElement("span");
-        bit.textContent = part;
-        crumbs.append(bit);
-      });
-    }
-
-    function clearReading() {
-      body.replaceChildren();
-    }
-
-    function showLines(text) {
-      clearReading();
-      const pre = document.createElement("pre");
-      pre.className = "file";
-      text.split(String.fromCharCode(10)).forEach((line, index) => {
-        const row = document.createElement("span");
-        const number = document.createElement("span");
-        number.className = "ln";
-        number.textContent = String(index + 1);
-        const code = document.createElement("span");
-        code.textContent = line.length ? line : " ";
-        row.append(number, code, document.createTextNode(String.fromCharCode(10)));
-        pre.append(row);
-      });
-      body.append(pre);
-    }
-
-    function showPatch(text) {
-      clearReading();
-      const pre = document.createElement("pre");
-      pre.className = "diff";
-      for (const line of text.split(String.fromCharCode(10))) {
-        const span = document.createElement("span");
-        span.textContent = line + String.fromCharCode(10);
-        if (line.startsWith("+++") || line.startsWith("---")) span.className = "hunk";
-        else if (line.startsWith("+")) span.className = "add";
-        else if (line.startsWith("-")) span.className = "del";
-        else if (line.startsWith("@@")) span.className = "hunk";
-        pre.append(span);
-      }
-      body.append(pre);
-    }
-
-    async function showFile(path, anchor) {
-      fileAnchor = anchor || fileAnchor;
-      mark(fileAnchor);
-      setCrumbs(path);
-      const response = await fetch("/api/file?path=" + encodeURIComponent(path));
-      subject.textContent = path.split("/").pop();
-      meta.textContent = (receipt.network ? receipt.network + " · " : "") + sizeText(fileBytes(path));
-      showLines(await response.text());
-    }
-
-    async function showDiff(rev, path) {
-      setCrumbs(path);
-      const response = await fetch("/api/diff?rev=" + encodeURIComponent(rev) + "&path=" + encodeURIComponent(path));
-      subject.textContent = path.split("/").pop();
-      showPatch(await response.text());
-    }
-
-    async function showCommit(commit, anchor) {
-      mark(anchor);
-      fileAnchor = null;
-      setCrumbs("");
-      const response = await fetch("/api/commit?rev=" + encodeURIComponent(commit.id));
-      if (!response.ok) {
-        subject.textContent = commit.subject;
-        showLines(await response.text());
-        return;
-      }
-      const data = await response.json();
-      subject.textContent = data.subject;
-      meta.textContent = data.author + ", " + new Date(data.at * 1000).toLocaleString();
-      clearReading();
-      const list = document.createElement("ul");
-      list.className = "changed";
-      for (const file of data.files) {
-        const item = document.createElement("li");
-        const anchorFile = document.createElement("a");
-        anchorFile.href = "#";
-        anchorFile.textContent = file.status + "  " + file.path;
-        anchorFile.addEventListener("click", (event) => {
-          event.preventDefault();
-          showDiff(data.id, file.path);
-        });
-        item.append(anchorFile);
-        list.append(item);
-      }
-      if (!data.files.length) {
-        const empty = document.createElement("p");
-        empty.textContent = "This commit does not change a file.";
-        body.append(empty);
-      }
-      body.append(list);
-    }
-
-    function fileLink(parent, file) {
-      const item = document.createElement("li");
-      const anchor = document.createElement("a");
-      anchor.href = "#";
-      anchor.textContent = file.name;
-      anchor.addEventListener("click", (event) => {
-        event.preventDefault();
-        showFile(file.path, anchor);
-      });
-      item.className = "file";
-      item.append(anchor);
-      const size = document.createElement("span");
-      size.className = "bytes";
-      size.textContent = sizeText(file.bytes);
-      item.append(size);
-      parent.append(item);
-      if (file.path === "README.md") fileAnchor = anchor;
-    }
-
-    function fileBytes(path) {
-      const walk = (nodes) => {
-        for (const node of nodes) {
-          if (node.path === path) return node.bytes;
-          if (node.children) {
-            const found = walk(node.children);
-            if (found != null) return found;
-          }
-        }
-        return null;
-      };
-      return walk(tree);
-    }
-
-    function sizeText(bytes) {
-      const value = Number(bytes) || 0;
-      if (value < 1024) return value + " B";
-      if (value < 1048576) return (value / 1024).toFixed(1) + " KiB";
-      return (value / 1048576).toFixed(2) + " MiB";
-    }
-
-    function fact(label, value, total) {
-      const wrap = document.createElement("div");
-      if (total) wrap.className = "total";
-      const term = document.createElement("dt");
-      term.textContent = label;
-      const number = document.createElement("dd");
-      number.textContent = value;
-      wrap.append(term, number);
-      facts.append(wrap);
-    }
-
-    function showAccount(overview) {
-      facts.replaceChildren();
-      const paid = overview.account || {};
-      if (paid.microalgo != null) {
-        fact("ALGO", Number(paid.algo).toFixed(6), true);
-        fact("microALGO", String(paid.microalgo));
-      } else {
-        fact("ALGO", "not recorded", true);
-      }
-      fact("Notes", paid.notes == null ? "0" : String(paid.notes));
-      fact("Size", sizeText(overview.bytes));
-      fact("Files", String(overview.files.length));
-      fact("Commits", String(overview.commits.length));
-      if (paid.firstRound != null) {
-        const span = paid.firstRound === paid.lastRound ? String(paid.firstRound) : paid.firstRound + " to " + paid.lastRound;
-        fact("Rounds", span + " (" + paid.rounds + ")");
-      }
-      if (paid.pinned) fact("Pinned", String(paid.pinned));
-      if (paid.head) fact("Head", paid.head.slice(0, 12));
-    }
-
-    function renderTree(nodes, host, depth, query) {
-      const list = document.createElement("ul");
-      list.className = "tree";
-      const needle = query.trim().toLowerCase();
-      for (const node of nodes) {
-        if (node.children) {
-          const kept = filterNode(node, needle);
-          if (!kept) continue;
-          const item = document.createElement("li");
-          const details = document.createElement("details");
-          if (depth < 1 || needle) details.open = true;
-          const summary = document.createElement("summary");
-          summary.textContent = node.name;
-          details.append(summary);
-          const nest = document.createElement("div");
-          nest.className = "nest";
-          renderTree(node.children, nest, depth + 1, query);
-          details.append(nest);
-          item.append(details);
-          list.append(item);
-        } else if (!needle || node.path.toLowerCase().includes(needle) || node.name.toLowerCase().includes(needle)) {
-          fileLink(list, node);
-        }
-      }
-      if (list.childElementCount) host.append(list);
-    }
-
-    function filterNode(node, needle) {
-      if (!needle) return true;
-      if (!node.children) return node.path.toLowerCase().includes(needle);
-      return node.children.some((child) => filterNode(child, needle));
-    }
-
-    function drawTree(query) {
-      files.replaceChildren();
-      renderTree(tree, files, 0, query);
-    }
-
-    let overviewResponse;
-    try {
-    overviewResponse = await fetch("/api/overview");
-    if (!overviewResponse.ok) {
-      subject.textContent = "The repository did not load.";
-      showLines(await overviewResponse.text());
-      throw new Error("overview");
-    }
-    const overview = await overviewResponse.json();
-    tree = overview.tree || [];
-    showAccount(overview);
-    branch.textContent = overview.branch;
-    mailbox.textContent = overview.mailbox || "This page is on this machine.";
-    document.title = overview.branch + " · ALGit";
-    drawTree("");
-    find.addEventListener("input", () => drawTree(find.value));
-    for (const commit of overview.commits) {
-      const item = document.createElement("li");
-      const anchor = document.createElement("a");
-      anchor.href = "#";
-      anchor.textContent = commit.subject;
-      anchor.addEventListener("click", (event) => {
-        event.preventDefault();
-        showCommit(commit, anchor);
-      });
-      item.append(anchor);
-      commits.append(item);
-    }
-    if (overview.files.includes("README.md")) showFile("README.md", fileAnchor);
-    else if (overview.files.length) showFile(overview.files[0], null);
-    else if (overview.commits.length) showCommit(overview.commits[0], commits.querySelector("a"));
-    } catch (error) {
-      subject.textContent = "The page script failed.";
-      meta.textContent = error && error.message ? error.message : String(error);
-    }
-  </script>
+  <script type="module" src="/brand/page.js"></script>
 </body>
 </html>
 """

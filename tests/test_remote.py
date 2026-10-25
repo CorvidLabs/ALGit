@@ -216,7 +216,11 @@ class Page(unittest.TestCase):
                 self.assertIn("Skip to the commit", html)
                 self.assertIn('type="module"', html)
                 self.assertIn("Find a file", html)
-                self.assertIn('createElement("details")', html)
+                self.assertIn('src="/brand/page.js"', html)
+                with urllib.request.urlopen(f"http://127.0.0.1:{port}/brand/page.js") as response:
+                    script = response.read().decode()
+                self.assertIn('createElement("details")', script)
+                self.assertIn("fromCharCode(10)", script)
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/overview") as response:
                     overview = json.load(response)
                 self.assertIn("src/a.txt", overview["files"])
