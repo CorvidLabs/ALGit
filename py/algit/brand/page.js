@@ -174,8 +174,17 @@ async function showCommit(commit, anchor) {
   }
   const data = await response.json();
   subjectEl.textContent = data.subject;
-  metaEl.textContent = data.author + ", " + new Date(data.at * 1000).toLocaleString();
+  let detail = data.author + ", " + new Date(data.at * 1000).toLocaleString();
+  if (typeof commit.microalgo === "number") {
+    detail += " · " + commit.notes + " notes · " + (commit.microalgo / 1000000).toFixed(6) + " ALGO";
+  }
+  metaEl.textContent = detail;
   clearBody();
+  if (typeof commit.objects === "number" && typeof commit.notes === "number") {
+    const introduced = document.createElement("p");
+    introduced.textContent = "This commit introduced " + commit.objects + " objects in " + commit.notes + " notes.";
+    bodyEl.append(introduced);
+  }
   const list = document.createElement("ul");
   list.className = "changed";
   for (const file of data.files) {
@@ -186,6 +195,13 @@ async function showCommit(commit, anchor) {
     badge.className = "status";
     badge.textContent = file.status.slice(0, 1);
     link.append(badge, document.createTextNode("  " + file.path));
+    const sized = fileBytes(file.path);
+    if (sized != null) {
+      const bytes = document.createElement("span");
+      bytes.className = "bytes";
+      bytes.textContent = "  " + sizeText(sized);
+      link.append(bytes);
+    }
     link.addEventListener("click", (event) => {
       event.preventDefault();
       showDiff(data.id, file.path);
@@ -281,6 +297,12 @@ try {
     hash.className = "hash";
     hash.textContent = String(commit.id).slice(0, 7);
     link.append(hash, document.createTextNode("  " + commit.subject));
+    if (typeof commit.microalgo === "number") {
+      const cost = document.createElement("span");
+      cost.className = "cost";
+      cost.textContent = (commit.microalgo / 1000000).toFixed(6);
+      link.append(cost);
+    }
     link.addEventListener("click", (event) => {
       event.preventDefault();
       showCommit(commit, link);

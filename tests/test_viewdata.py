@@ -12,7 +12,7 @@ from tempfile import TemporaryDirectory
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "py"))
 
-from algit.viewdata import blob_sizes, commit_list, file_tree, overview  # noqa: E402
+from algit.viewdata import blob_sizes, commit_cost, commit_list, file_tree, note_fee, overview  # noqa: E402
 
 GIT_ENV = {
     **os.environ,
@@ -90,6 +90,9 @@ class ViewData(unittest.TestCase):
             self.assertIsInstance(commits[0]["at"], int)
             self.assertEqual(commits[0]["files"], 1)
             self.assertEqual(commits[1]["files"], 2)
+            self.assertGreater(commits[1]["microalgo"], 0)
+            self.assertGreater(commits[1]["objects"], commits[0]["objects"])
+            self.assertGreaterEqual(commits[1]["bytes"], readme_size + source_size)
             account = data["account"]
             self.assertEqual(account["microalgo"], 1_500_000)
             self.assertEqual(account["algo"], 1.5)
@@ -145,6 +148,31 @@ class ViewData(unittest.TestCase):
         self.assertEqual(workflows["children"][0]["path"], ".github/workflows/ci.yml")
         self.assertEqual([child["name"] for child in tree[1]["children"]], ["a.txt", "b.txt"])
         self.assertEqual(tree[1]["bytes"], 6)
+
+    def test_note_fee_matches_the_probe(self) -> None:
+        self.assertEqual(note_fee(4096), 1308)
+        self.assertEqual(note_fee(1024), 1000)
+        self.assertEqual(note_fee(1025), 1001)
+
+    def test_root_commit_costs_more_objects_than_the_edit(self) -> None:
+        with TemporaryDirectory() as tmp:
+            repo = make_repo(Path(tmp))
+            (repo / "README.md").write_bytes(b"hello\n")
+            git(str(repo), "add", "README.md")
+            git(str(repo), "commit", "-q", "-m", "start")
+            (repo / "README.md").write_bytes(b"hello again\n")
+            git(str(repo), "add", "README.md")
+            git(str(repo), "commit", "-q", "-m", "edit")
+            root = git(str(repo), "rev-list", "--max-parents=0", "HEAD")
+            tip = git(str(repo), "rev-parse", "HEAD")
+            root_cost = commit_cost(str(repo), root)
+            tip_cost = commit_cost(str(repo), tip)
+            self.assertGreaterEqual(root_cost["objects"], 3)
+            self.assertGreater(root_cost["microalgo"], 0)
+            self.assertGreater(root_cost["notes"], 0)
+            self.assertGreater(tip_cost["microalgo"], 0)
+            self.assertGreater(tip_cost["notes"], 0)
+            self.assertNotEqual(tip_cost["id"], root_cost["id"])
 
     def test_git_failure_raises_runtime_error(self) -> None:
         with TemporaryDirectory() as tmp:

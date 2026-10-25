@@ -4,12 +4,24 @@ from __future__ import annotations
 
 import subprocess
 
-__all__ = ["blob_sizes", "file_tree", "commit_list", "overview"]
+__all__ = [
+    "blob_sizes",
+    "file_tree",
+    "commit_list",
+    "commit_cost",
+    "note_fee",
+    "object_note_fees",
+    "overview",
+]
+
+HEADER = 51
+PUBLIC_CHUNK = 4096 - HEADER
 
 
-def _git(root: str, *args: str) -> str:
+def _git(root: str, *args: str, input_text: str | None = None) -> str:
     result = subprocess.run(
         ["git", "-C", root, *args],
+        input=None if input_text is None else input_text.encode(),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
@@ -62,6 +74,67 @@ def file_tree(paths: list[str], sizes: dict[str, int]) -> list[dict]:
     return root["children"]
 
 
+def note_fee(note_len: int, min_fee: int = 1000) -> int:
+    """MicroALGO for one note. Same integer rule as the push."""
+    if note_len < 0 or note_len > 4096:
+        raise ValueError(f"note length {note_len} is not legal")
+    over = max(0, note_len - 1024)
+    return min_fee + (over * min_fee + 9999) // 10000
+
+
+def object_note_fees(kind: str, content_size: int, min_fee: int = 1000) -> tuple[int, int]:
+    """Return (microalgo, note count) for one canonical git object."""
+    canonical = len(f"{kind} {content_size}".encode()) + 1 + content_size
+    remaining = canonical
+    fees = 0
+    notes = 0
+    while remaining > 0:
+        take = min(PUBLIC_CHUNK, remaining)
+        fees += note_fee(HEADER + take, min_fee)
+        notes += 1
+        remaining -= take
+    if notes == 0:
+        fees = note_fee(HEADER, min_fee)
+        notes = 1
+    return fees, notes
+
+
+def commit_cost(root: str, oid: str, min_fee: int = 1000) -> dict:
+    """ALGO for the git objects this commit introduces. Ref notes are not included."""
+    parents = _git(root, "rev-parse", f"{oid}^@").split()
+    if parents:
+        listed = _git(root, "rev-list", "--objects", oid, f"^{parents[0]}")
+    else:
+        listed = _git(root, "rev-list", "--objects", oid)
+    oids = []
+    seen = set()
+    for line in listed.splitlines():
+        item = line.split()[0]
+        if item not in seen:
+            seen.add(item)
+            oids.append(item)
+    checked = _git(root, "cat-file", "--batch-check", input_text="\n".join(oids) + "\n") if oids else ""
+    micro = 0
+    notes = 0
+    content_bytes = 0
+    objects = 0
+    for line in checked.splitlines():
+        parts = line.split()
+        if len(parts) < 3 or parts[1] == "missing":
+            continue
+        kind, size_text = parts[1], parts[2]
+        try:
+            size = int(size_text)
+        except ValueError:
+            continue
+        fee, count = object_note_fees(kind, size, min_fee)
+        micro += fee
+        notes += count
+        content_bytes += size
+        objects += 1
+    return {"id": oid, "microalgo": micro, "notes": notes, "objects": objects, "bytes": content_bytes}
+
+
 def commit_list(root: str) -> list[dict]:
     # Header, a blank line, then paths. The next header follows the last path.
     raw = _git(root, "log", "--format=%H%x1f%an%x1f%at%x1f%s", "--name-only")
@@ -77,6 +150,7 @@ def commit_list(root: str) -> list[dict]:
                     commits.append(current)
                 oid, author, stamp, subject = bits
                 current = {"id": oid, "author": author, "at": int(stamp), "subject": subject}
+                current.update(commit_cost(root, oid))
                 files = 0
                 continue
         if current is not None and line:

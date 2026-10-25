@@ -37,6 +37,9 @@ Push a git repository onto Algorand LocalNet, quote the same push on MainNet wit
 | `file_tree` | function | Nest those paths into folders, with a size on every node. |
 | `commit_list` | function | List commits with a count of the paths each one changed. |
 | `overview` | function | The branch, the tree, the bytes, the commits, and the receipt account. |
+| `note_fee` | function | MicroALGO for one note under the same integer rule as the push. |
+| `object_note_fees` | function | MicroALGO and note count for one canonical git object. |
+| `commit_cost` | function | MicroALGO for the objects a commit introduces. Ref notes are not included. |
 
 ## Invariants
 
