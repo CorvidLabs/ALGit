@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "check-out-a-branch-whose-name-contains-a-slash",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "15253569518540602bc2fcb681eb89c175c5e286",
+  "contract_digest": "f8bb0089b563e361a91a93f0df413130c98ce7dee73503e73e63bc18f249a35e",
+  "execution_digest": "0a499a52f656c089bff9b5a699014b4106ac042f72d980c53c176e613ff7c46c",
+  "workspace_digest": "ac7ab75b8afbb277a2f5c6086fb981282c03ce99b3737729f9ce74d7cb83bac2",
+  "timestamp": 1792946727
+}

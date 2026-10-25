@@ -1,6 +1,6 @@
 ---
 id: check-out-a-branch-whose-name-contains-a-slash
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 3202adc30119bf99604246b377b26865e9b5dabe
 ---

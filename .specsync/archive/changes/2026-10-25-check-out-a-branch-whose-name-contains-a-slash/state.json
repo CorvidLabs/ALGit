@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "check-out-a-branch-whose-name-contains-a-slash",
+  "slug": "check-out-a-branch-whose-name-contains-a-slash",
+  "title": "Check out a branch whose name contains a slash",
+  "description": "Check out a branch whose name contains a slash",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "3202adc30119bf99604246b377b26865e9b5dabe",
+  "created_at": 1792946666,
+  "updated_at": 1792946744,
+  "affected_specs": [
+    "algit"
+  ],
+  "affected_paths": [
+    "py/algit/command.py",
+    "tests/test_remote.py"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "I can clone a mailbox whose branch name contains a slash, and the work tree is on that branch."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "yes"
+  }
+}
