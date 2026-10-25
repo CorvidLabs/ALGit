@@ -16,6 +16,22 @@
         }
       ],
       "requirement_ids": []
+    },
+    {
+      "timestamp": 1792947733,
+      "commit": "de7e3bad365f466f78518b21581524f610d64485",
+      "contract_digest": "7f28c29295fba7367f761198c4c02a7b04b2d3f5882bcfda32b7941f6f656989",
+      "execution_digest": "13a60f6d04865ccdf281974a027748d543b16feb29ff883aa8e0e1f71915a603",
+      "workspace_digest": "63fffc0e35c8318ca1745793959e5ce7a4c67c63a7457ec002223dd74a08f599",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
     }
   ]
 }
