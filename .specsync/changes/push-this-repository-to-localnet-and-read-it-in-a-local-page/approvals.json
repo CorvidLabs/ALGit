@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1792946092,
+      "digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "push-this-repository-to-localnet-and-read-it-in-a-local-page",
+        "title": "Push this repository to LocalNet and read it in a local page",
+        "description": "Push this repository to LocalNet and read it in a local page",
+        "kind": "feature",
+        "affected_specs": [
+          "algit"
+        ],
+        "affected_paths": [
+          ".gitignore",
+          ".specsync/config.toml",
+          "README.md",
+          "py",
+          "pyproject.toml",
+          "tests"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A file that is too heavy for a note is pinned to the Pinata account in my PINATA_JWT, through the gateway in my PINATA_GATEWAY.",
+          "I can ask what the same push would cost on MainNet and see the ALGO before anything is spent.",
+          "I can clone that repository back off the chain and git fsck accepts it.",
+          "I can push a git repository to Algorand LocalNet with one command.",
+          "I can start a page on my own machine and read the commits, files, and diffs of what I pushed.",
+          "The command and the page are one Python program.",
+          "The command has no CorvidLabs Pinata account of its own."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "algit": "fa64187df5450970f5921ca5b4971f6a3e8eb94f9c0fe46be5099f473dc51fe3"
+      }
+    }
+  ],
+  "reopenings": []
+}

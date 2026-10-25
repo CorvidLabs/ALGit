@@ -6,3 +6,8 @@ measure/pydeps
 measure/__pycache__
 __pycache__
 *.pyc
+.algit/
+.venv/
+
+# spec-sync hash cache (regenerated locally)
+.specsync/hashes.json

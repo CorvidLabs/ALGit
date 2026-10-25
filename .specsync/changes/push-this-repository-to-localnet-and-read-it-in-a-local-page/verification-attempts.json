@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1792946411,
+      "commit": "2aee85055fb43adf616f740eb998a6781e287dc7",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "38ee7bb4564fa55c5db0a473172dca2b0daa835fdd9592b2ddbf90f842cfdfef",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-algit-1",
+        "REQ-algit-2",
+        "REQ-algit-3",
+        "REQ-algit-4",
+        "REQ-algit-5",
+        "REQ-algit-6",
+        "REQ-algit-7"
+      ]
+    }
+  ]
+}
