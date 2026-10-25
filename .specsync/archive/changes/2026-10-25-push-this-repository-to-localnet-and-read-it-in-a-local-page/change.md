@@ -1,6 +1,6 @@
 ---
 id: push-this-repository-to-localnet-and-read-it-in-a-local-page
-state: implementing
+state: archived
 type: feature
 base_commit: 2aee85055fb43adf616f740eb998a6781e287dc7
 ---

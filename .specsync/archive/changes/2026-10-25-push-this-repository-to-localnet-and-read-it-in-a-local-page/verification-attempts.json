@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1792946411,
+      "commit": "2aee85055fb43adf616f740eb998a6781e287dc7",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "38ee7bb4564fa55c5db0a473172dca2b0daa835fdd9592b2ddbf90f842cfdfef",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-algit-1",
+        "REQ-algit-2",
+        "REQ-algit-3",
+        "REQ-algit-4",
+        "REQ-algit-5",
+        "REQ-algit-6",
+        "REQ-algit-7"
+      ]
+    },
+    {
+      "timestamp": 1792946416,
+      "commit": "0e042153b1c2c6b229eb1d3971ac0db40fc2aca2",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "4e04e9fd5701f8fbca408ac5631db2414cd71de02d70f4415d52b73421b45908",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-algit-1",
+        "REQ-algit-2",
+        "REQ-algit-3",
+        "REQ-algit-4",
+        "REQ-algit-5",
+        "REQ-algit-6",
+        "REQ-algit-7"
+      ]
+    },
+    {
+      "timestamp": 1792946450,
+      "commit": "86c5839345534f2bbc5a0370bf6ce34f013ff25d",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "1c616383c4ef3bbf7399711717702ce2d4e842deaaf18a3b0871f3359aa47909",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-algit-1",
+        "REQ-algit-2",
+        "REQ-algit-3",
+        "REQ-algit-4",
+        "REQ-algit-5",
+        "REQ-algit-6",
+        "REQ-algit-7"
+      ]
+    },
+    {
+      "timestamp": 1792946455,
+      "commit": "88432996be3a15ba2e4afb1221776bffc58b5d6d",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "1c616383c4ef3bbf7399711717702ce2d4e842deaaf18a3b0871f3359aa47909",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-algit-1",
+        "REQ-algit-2",
+        "REQ-algit-3",
+        "REQ-algit-4",
+        "REQ-algit-5",
+        "REQ-algit-6",
+        "REQ-algit-7"
+      ]
+    },
+    {
+      "timestamp": 1792946455,
+      "commit": "4b98ea8bbc860d3c55796080741903b28d1a6e26",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "1c616383c4ef3bbf7399711717702ce2d4e842deaaf18a3b0871f3359aa47909",
+      "acceptance_input_digest": "82ff2f43169444d3dc59f438bf671c65df80105507f41501898ec53eff25cf29",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".gitignore",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ac7d0d293d7a46c3f1a6d00465ee6e265ac42ce47d96c88b57795f40d25fe88c",
+            "entry_digest": "0e4661a0c7b2786d52f4d74d7036cb6ae5df728348408f46a81850aed5fccfd7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".specsync/config.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c0e9f7833b97328f2056ba887b63f628b6201dfdd81e5e5ed980bafbb5a23e8d",
+            "entry_digest": "49554d39d991788e93248edca32e4415aebec4ec0a2f81a33aebe3b9dcc629ef",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "47bc13c649171da236deb0ad69951a89c909303ef5328ada2568040d3606fe42",
+            "entry_digest": "bf7875fd3b2941af8d106d091f36b469e8794bbcdbb7837e4988d890adb9b756",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "py",
+            "kind": "non_file",
+            "mode": 0,
+            "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entry_digest": "083bda98f26016184de20e2305274c805f48b10c52fdb394ae386e79c806047a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "py/algit/__init__.py",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "04d636c8ffde4dc87c666b77598c15470aa7b83c04bce01d5d55593ad0dc7833",
+            "entry_digest": "ec10330f1a23bb59fc344dafa2e1ba7c7f3b5694bb892a9fe3d7ad328177d88a",
+            "owners": [
+              "algit"
+            ]
+          },
+          {
+            "path": "py/algit/__main__.py",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a07b12f062c4118b03353ff205e988c665eeb804f129f96f00d98a810a6c4860",
+            "entry_digest": "b4e3f5d0ca94a9abd8cd078b613740c9c77edebe285a48deeeb97f13a576f8be",
+            "owners": [
+              "algit"
+            ]
+          },
+          {
+            "path": "py/algit/command.py",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a440da627793bf1a21910be05a75e7374303f256d58d2c2724c240e3338a88a0",
+            "entry_digest": "e94f3e2f18a4d0af6c8f41847561efcf435aa4ee28de9fe2b096a4141814461d",
+            "owners": [
+              "algit"
+            ]
+          },
+          {
+            "path": "pyproject.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ae976daf21798e160c682d7df201f2509348cfffc1aebc0f16dcc2020144232e",
+            "entry_digest": "155b019682fc3cd0903d21275b7510f652def592c8e8fcf7e718c97d4a923874",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "specs/algit/algit.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3ecf80ea14fbac530c4d4d0fb1d7940afc05822e7744dd922a5a83b7178dcf13",
+            "entry_digest": "14355bdbfcf8c6756138fd8b2d5739cbccaf97d53c66f1bcb6f4179447403e31",
+            "owners": [
+              "algit"
+            ]
+          },
+          {
+            "path": "specs/algit/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "79adfb723db1e2cbe44381a595bb759e07ead19149ab55df26c80676c9fb924f",
+            "entry_digest": "b25db2d801ea205b0adf7323ea170d2e470854e121ce0432f41714fa415bf27a",
+            "owners": [
+              "algit"
+            ]
+          },
+          {
+            "path": "tests",
+            "kind": "non_file",
+            "mode": 0,
+            "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entry_digest": "4d4bb85940a6c0d87dcf0d6b854998eaa7f754fc923e0583b1e2dfc77e6ea398",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "tests/test_remote.py",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "835667bdce71909adb561b0c21f5fd2428f0aa0161c2f4d758aaae70823f9231",
+            "entry_digest": "fa37d22cbb83df6affeafe3b9073db0797b571b2a4f095aa2133c00718f0e2f3",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec algit",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-algit-1",
+        "REQ-algit-2",
+        "REQ-algit-3",
+        "REQ-algit-4",
+        "REQ-algit-5",
+        "REQ-algit-6",
+        "REQ-algit-7"
+      ]
+    }
+  ]
+}

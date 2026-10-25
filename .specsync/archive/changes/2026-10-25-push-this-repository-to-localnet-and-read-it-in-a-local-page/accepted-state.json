@@ -7,11 +7,11 @@
   "title": "Push this repository to LocalNet and read it in a local page",
   "description": "Push this repository to LocalNet and read it in a local page",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "2aee85055fb43adf616f740eb998a6781e287dc7",
   "created_at": 1792945795,
-  "updated_at": 1792946456,
+  "updated_at": 1792946482,
   "affected_specs": [
     "algit"
   ],
