@@ -255,14 +255,24 @@ def clone_mailbox(mailbox: str, into: str, indexer: str = LOCAL_INDEXER) -> dict
     return built
 
 
-def serve(repo: str, host: str = "127.0.0.1", port: int = 4711, mailbox: str = "", network: str = "localnet", background: bool = False):
+def serve(repo: str, host: str = "127.0.0.1", port: int = 4711, mailbox: str = "", network: str = "localnet", account: dict | None = None, background: bool = False):
     """Serve the local page for a cloned repository. Binds to 127.0.0.1."""
     if host != "127.0.0.1":
         raise RuntimeError("the page listens on 127.0.0.1")
     root = Path(repo).resolve()
     if not (root / ".git").exists() and not (root / "HEAD").exists():
         raise RuntimeError(f"{repo} is not a git repository")
-    receipt = {"mailbox": mailbox, "network": network, "repo": root.name}
+    paid = account or {}
+    receipt = {
+        "mailbox": mailbox,
+        "network": network,
+        "repo": root.name,
+        "microalgo": paid.get("microalgo"),
+        "notes": paid.get("notes"),
+        "rounds": paid.get("rounds") or [],
+        "head": paid.get("head") or "",
+        "pinned": len(paid.get("pinned") or []),
+    }
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self) -> None:  # noqa: N802
@@ -432,11 +442,12 @@ def _cmd_serve(args: list[str]) -> int:
         receipt_path = Path(".algit") / "remote.json"
     mailbox = ""
     network = "localnet"
+    saved = {}
     if receipt_path.exists():
         saved = json.loads(receipt_path.read_text())
         mailbox = saved.get("mailbox", "")
         network = saved.get("network", "localnet")
-    serve(repo, port=port, mailbox=mailbox, network=network)
+    serve(repo, port=port, mailbox=mailbox, network=network, account=saved)
     return 0
 
 
@@ -846,19 +857,48 @@ def _overview(root: Path, receipt: dict) -> dict:
     for line in log.splitlines():
         oid, author, when, subject = line.decode().split("\x1f", 3)
         commits.append({"id": oid, "author": author, "at": int(when), "subject": subject})
-    files = [line.decode() for line in _git(str(root), "ls-tree", "-r", "--name-only", "HEAD").splitlines()]
+    sizes = _blob_sizes(root)
+    files = sorted(sizes)
+    rounds = list(receipt.get("rounds") or [])
+    micro = receipt.get("microalgo")
     return {
         "branch": branch,
         "mailbox": receipt.get("mailbox", ""),
         "network": receipt.get("network", ""),
         "commits": commits,
         "files": files,
-        "tree": _file_tree(files),
+        "tree": _file_tree(files, sizes),
+        "bytes": sum(sizes.values()),
+        "account": {
+            "microalgo": micro,
+            "algo": None if micro is None else micro / 1_000_000,
+            "notes": receipt.get("notes"),
+            "rounds": len(rounds),
+            "firstRound": rounds[0] if rounds else None,
+            "lastRound": rounds[-1] if rounds else None,
+            "head": receipt.get("head") or "",
+            "pinned": receipt.get("pinned") or 0,
+        },
     }
 
 
-def _file_tree(paths: list[str]) -> list[dict]:
-    """Nested folders. Each node is a directory `{name, children}` or a file `{name, path}`."""
+def _blob_sizes(root: Path) -> dict[str, int]:
+    found = {}
+    for line in _git(str(root), "ls-tree", "-r", "-l", "HEAD").splitlines():
+        meta, _, path = line.partition(b"\t")
+        parts = meta.split()
+        if len(parts) < 4 or not path:
+            continue
+        try:
+            size = int(parts[3])
+        except ValueError:
+            size = 0
+        found[path.decode()] = size
+    return found
+
+
+def _file_tree(paths: list[str], sizes: dict[str, int]) -> list[dict]:
+    """Nested folders. Each node is a directory `{name, children, bytes}` or a file `{name, path, bytes}`."""
     root: dict = {"children": []}
 
     def directory(node: dict, name: str) -> dict:
@@ -874,9 +914,20 @@ def _file_tree(paths: list[str]) -> list[dict]:
         node = root
         for name in parts[:-1]:
             node = directory(node, name)
-        node["children"].append({"name": parts[-1], "path": path})
+        node["children"].append({"name": parts[-1], "path": path, "bytes": sizes.get(path, 0)})
     _sort_tree(root["children"])
+    _roll_bytes(root)
     return root["children"]
+
+
+def _roll_bytes(node: dict) -> int:
+    if "children" not in node:
+        return int(node.get("bytes") or 0)
+    total = 0
+    for child in node["children"]:
+        total += _roll_bytes(child)
+    node["bytes"] = total
+    return total
 
 
 def _sort_tree(nodes: list[dict]) -> None:
@@ -999,6 +1050,23 @@ PAGE = """<!DOCTYPE html>
       max-width: 28rem;
     }
     .sheen-rule { height: 4px; background: var(--iridescence); }
+    .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.1rem 1.6rem;
+      margin: 0;
+      padding: 0.7rem 1.25rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--hairline);
+    }
+    .facts div { min-width: 6.5rem; }
+    .facts dt { margin: 0; font-size: 0.75rem; color: var(--text-faint); }
+    .facts dd {
+      margin: 0.1rem 0 0;
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+    }
+    .facts .total dd { font-size: 1.35rem; color: var(--sheen-strong); }
     .shell {
       display: grid;
       grid-template-columns: 18rem minmax(0, 1fr);
@@ -1052,6 +1120,14 @@ PAGE = """<!DOCTYPE html>
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .rail li.file { display: flex; gap: 0.5rem; align-items: baseline; min-width: 0; }
+    .rail li.file a { flex: 1; min-width: 0; }
+    .bytes {
+      flex: none;
+      color: var(--text-faint);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
     }
     .rail a[aria-current="page"] { color: var(--sheen-strong); }
     .tree .nest { padding-inline-start: 0.85rem; }
@@ -1148,6 +1224,7 @@ PAGE = """<!DOCTYPE html>
     </button>
   </header>
   <div class="sheen-rule" aria-hidden="true"></div>
+  <dl class="facts" id="facts"></dl>
   <div class="shell">
     <nav class="rail" aria-label="Repository">
       <label class="find">Find a file
@@ -1174,6 +1251,7 @@ PAGE = """<!DOCTYPE html>
     const meta = document.getElementById("meta");
     const body = document.getElementById("body");
     const crumbs = document.getElementById("crumbs");
+    const facts = document.getElementById("facts");
     const branch = document.getElementById("branch");
     const mailbox = document.getElementById("mailbox");
     const find = document.getElementById("find");
@@ -1243,7 +1321,7 @@ PAGE = """<!DOCTYPE html>
       setCrumbs(path);
       const response = await fetch("/api/file?path=" + encodeURIComponent(path));
       subject.textContent = path.split("/").pop();
-      meta.textContent = receipt.network ? receipt.network : "";
+      meta.textContent = (receipt.network ? receipt.network + " · " : "") + sizeText(fileBytes(path));
       showLines(await response.text());
     }
 
@@ -1299,9 +1377,67 @@ PAGE = """<!DOCTYPE html>
         event.preventDefault();
         showFile(file.path, anchor);
       });
+      item.className = "file";
       item.append(anchor);
+      const size = document.createElement("span");
+      size.className = "bytes";
+      size.textContent = sizeText(file.bytes);
+      item.append(size);
       parent.append(item);
       if (file.path === "README.md") fileAnchor = anchor;
+    }
+
+    function fileBytes(path) {
+      const walk = (nodes) => {
+        for (const node of nodes) {
+          if (node.path === path) return node.bytes;
+          if (node.children) {
+            const found = walk(node.children);
+            if (found != null) return found;
+          }
+        }
+        return null;
+      };
+      return walk(tree);
+    }
+
+    function sizeText(bytes) {
+      const value = Number(bytes) || 0;
+      if (value < 1024) return value + " B";
+      if (value < 1048576) return (value / 1024).toFixed(1) + " KiB";
+      return (value / 1048576).toFixed(2) + " MiB";
+    }
+
+    function fact(label, value, total) {
+      const wrap = document.createElement("div");
+      if (total) wrap.className = "total";
+      const term = document.createElement("dt");
+      term.textContent = label;
+      const number = document.createElement("dd");
+      number.textContent = value;
+      wrap.append(term, number);
+      facts.append(wrap);
+    }
+
+    function showAccount(overview) {
+      facts.replaceChildren();
+      const paid = overview.account || {};
+      if (paid.microalgo != null) {
+        fact("ALGO", Number(paid.algo).toFixed(6), true);
+        fact("microALGO", String(paid.microalgo));
+      } else {
+        fact("ALGO", "not recorded", true);
+      }
+      fact("Notes", paid.notes == null ? "0" : String(paid.notes));
+      fact("Size", sizeText(overview.bytes));
+      fact("Files", String(overview.files.length));
+      fact("Commits", String(overview.commits.length));
+      if (paid.firstRound != null) {
+        const span = paid.firstRound === paid.lastRound ? String(paid.firstRound) : paid.firstRound + " to " + paid.lastRound;
+        fact("Rounds", span + " (" + paid.rounds + ")");
+      }
+      if (paid.pinned) fact("Pinned", String(paid.pinned));
+      if (paid.head) fact("Head", paid.head.slice(0, 12));
     }
 
     function renderTree(nodes, host, depth, query) {
@@ -1352,6 +1488,7 @@ PAGE = """<!DOCTYPE html>
     }
     const overview = await overviewResponse.json();
     tree = overview.tree || [];
+    showAccount(overview);
     branch.textContent = overview.branch;
     mailbox.textContent = overview.mailbox || "This page is on this machine.";
     document.title = overview.branch + " · ALGit";

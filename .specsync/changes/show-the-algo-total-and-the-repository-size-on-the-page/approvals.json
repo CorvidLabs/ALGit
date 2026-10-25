@@ -1,0 +1,40 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1792949014,
+      "digest": "1b38ed144b6d3d95c93030b70bbd1aaf15bb269acecba72a0073384dd2178312",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "show-the-algo-total-and-the-repository-size-on-the-page",
+        "title": "Show the ALGO total and the repository size on the page",
+        "description": "Show the ALGO total and the repository size on the page",
+        "kind": "feature",
+        "affected_specs": [
+          "algit"
+        ],
+        "affected_paths": [
+          "py/algit/command.py",
+          "tests/test_remote.py"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "I can see the total ALGO, the note count, the rounds, and the size of the repository."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "algit": "43678ce817d9309182537bbd7b4f639ece1599d185497dfe7fbb8cfbc00319f9"
+      }
+    }
+  ],
+  "reopenings": []
+}

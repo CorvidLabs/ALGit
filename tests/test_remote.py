@@ -220,6 +220,8 @@ class Page(unittest.TestCase):
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/overview") as response:
                     overview = json.load(response)
                 self.assertIn("src/a.txt", overview["files"])
+                self.assertGreater(overview["bytes"], 0)
+                self.assertIn("id=\"facts\"", html)
                 self.assertTrue(any(node.get("name") == "src" and "children" in node for node in overview["tree"]))
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/commit?rev=HEAD") as response:
                     commit = json.load(response)

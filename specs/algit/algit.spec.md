@@ -1,6 +1,6 @@
 ---
 module: algit
-version: 5
+version: 6
 status: draft
 files:
   - py/algit/__init__.py
@@ -37,7 +37,7 @@ A public note is an ALGT frame of version 1. The sha1 of a stored canonical obje
 
 ## Behavioral Examples
 
-A one-commit repository becomes one set of object notes plus one ref note. Materializing those notes produces a bare repository whose git fsck exits 0 and whose branch points at the same commit. When the mailbox has more than one branch, the work tree checks out the branch that is not an ancestor of another branch, and a slash in that name is kept. Asking for a MainNet quote prints microALGO and ALGO and leaves the chain untouched. A blob of 256 KiB plus one byte is posted to the caller's Pinata gateway. The page script is valid JavaScript. It loads the CorvidLabs design-system tokens, the sun/moon toggle, Schibsted Grotesk, and Spline Sans Mono. Files are folders: a path with a slash is a file inside a folder, the open file shows that path broken at each slash, and a commit lists the files it changed before any one of them is shown as a diff. A browser that runs the page shows those folders.
+A one-commit repository becomes one set of object notes plus one ref note. Materializing those notes produces a bare repository whose git fsck exits 0 and whose branch points at the same commit. When the mailbox has more than one branch, the work tree checks out the branch that is not an ancestor of another branch, and a slash in that name is kept. Asking for a MainNet quote prints microALGO and ALGO and leaves the chain untouched. A blob of 256 KiB plus one byte is posted to the caller's Pinata gateway. The page script is valid JavaScript. It loads the CorvidLabs design-system tokens, the sun/moon toggle, Schibsted Grotesk, and Spline Sans Mono. Files are folders, each file shows its size, and a commit lists the files it changed. The page also shows the ALGO the notes cost, the microALGO, the note count, the round span, and the total size of the files.
 
 ## Error Cases
 
@@ -55,3 +55,4 @@ Python 3.11 or newer. py-algorand-sdk 2.12, because 2.11.1 rejects a note over 1
 | 2026-10-25 | show-the-files-on-a-page-that-uses-the-corvidlabs-design-system: Show the files on a page that uses the CorvidLabs design system |
 | 2026-10-25 | browse-files-as-folders-and-read-a-commit-as-the-files-it-changed: Browse files as folders and read a commit as the files it changed |
 | 2026-10-25 | make-the-page-script-valid-so-the-folders-render: Make the page script valid so the folders render |
+| 2026-10-25 | show-the-algo-total-and-the-repository-size-on-the-page: Show the ALGO total and the repository size on the page |
