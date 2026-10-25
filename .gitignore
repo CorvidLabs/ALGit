@@ -8,6 +8,7 @@ __pycache__
 *.pyc
 .algit/
 .venv/
+*.egg-info/
 
 # spec-sync hash cache (regenerated locally)
 .specsync/hashes.json
