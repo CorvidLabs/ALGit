@@ -7,11 +7,11 @@
   "title": "Read the repository as a ledger with hashes, folders, and the cost",
   "description": "Read the repository as a ledger with hashes, folders, and the cost",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "4597741ba867ce075613ad2dda3ebe186211e765",
   "created_at": 1792949722,
-  "updated_at": 1792949835,
+  "updated_at": 1792949936,
   "affected_specs": [
     "algit"
   ],

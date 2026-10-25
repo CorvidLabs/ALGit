@@ -38,6 +38,13 @@
       "approved_delta_digests": {
         "algit": "08b8607cbdf0080030b613af60dcf324b15499f382ce3e8a3172fcf286f792da"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1792949894,
+      "digest": "9eb5bb23f8e2e960697b4eafca4374d0576550654f74668f3228d2a617af7e4f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

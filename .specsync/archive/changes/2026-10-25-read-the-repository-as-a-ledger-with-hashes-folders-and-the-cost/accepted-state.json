@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "read-the-repository-as-a-ledger-with-hashes-folders-and-the-cost",
+  "slug": "read-the-repository-as-a-ledger-with-hashes-folders-and-the-cost",
+  "title": "Read the repository as a ledger with hashes, folders, and the cost",
+  "description": "Read the repository as a ledger with hashes, folders, and the cost",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "4597741ba867ce075613ad2dda3ebe186211e765",
+  "created_at": 1792949722,
+  "updated_at": 1792949895,
+  "affected_specs": [
+    "algit"
+  ],
+  "affected_paths": [
+    "py/algit/command.py",
+    "py/algit/viewdata.py",
+    "py/algit/brand/page.js",
+    "py/algit/brand/page.css",
+    "tests/test_viewdata.py",
+    "tests/test_remote.py"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "I can read the repository as a ledger: the cost, the folders, a file, and a commit hash I can open."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "public_contract": "yes"
+  }
+}

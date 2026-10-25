@@ -1,6 +1,6 @@
 ---
 id: read-the-repository-as-a-ledger-with-hashes-folders-and-the-cost
-state: implementing
+state: archived
 type: feature
 base_commit: 4597741ba867ce075613ad2dda3ebe186211e765
 ---
