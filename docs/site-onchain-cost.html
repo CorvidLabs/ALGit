@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Site on chain, if the heavy files lived on IPFS</title>
+  <style>
+    :root {
+      --paper: #e6f0e6;
+      --ink: #14241c;
+      --muted: #3e5649;
+      --indigo: #24356b;
+      --ochre: #8a5a12;
+      --moss: #1d5c40;
+      --bark: #6b4a2a;
+      --slate: #3a5168;
+      --rest: #6d8b78;
+      --line: #b7cbb8;
+      --bg: var(--paper);
+      --fg: var(--ink);
+      --soft: var(--muted);
+      --accent: var(--indigo);
+      --image: var(--ochre);
+      --built: var(--moss);
+      --pack: var(--bark);
+      --json: var(--slate);
+      --other: var(--rest);
+      --rule: var(--line);
+      color-scheme: light dark;
+      font-family: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      font-size: 1.125rem;
+      line-height: 1.55;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101a16;
+        --fg: #e6f0e6;
+        --soft: #c5d5c8;
+        --accent: #c5d0f5;
+        --image: #e0a45a;
+        --built: #8fceb0;
+        --pack: #e2c2a2;
+        --json: #b7c9dc;
+        --other: #8faf9c;
+        --rule: #2c4638;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    main {
+      max-inline-size: 42rem;
+      margin-inline: auto;
+      padding-block: 2.75rem 4.5rem;
+      padding-inline: 1.25rem;
+    }
+
+    h1 {
+      margin: 0 0 1rem;
+      font-size: clamp(2rem, 4.6cqi, 2.85rem);
+      font-weight: 560;
+      line-height: 1.12;
+      text-wrap: balance;
+    }
+
+    main { container-type: inline-size; }
+
+    h2 {
+      margin: 2.75rem 0 0.75rem;
+      font-size: 1.45rem;
+      font-weight: 560;
+      line-height: 1.2;
+    }
+
+    p { margin: 0.75rem 0; }
+
+    a {
+      color: var(--accent);
+      text-underline-offset: 0.18em;
+    }
+
+    code { font-family: inherit; }
+
+    a:focus-visible,
+    .table-wrap:focus-visible,
+    .chart-scroll:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .soft { color: var(--soft); }
+
+    .verdict {
+      font-size: 1.2rem;
+      line-height: 1.45;
+    }
+
+    .scale {
+      position: relative;
+      block-size: 0.85rem;
+      margin-block: 1.25rem 0.35rem;
+      border-block-end: 1px solid var(--fg);
+    }
+
+    .mark {
+      position: absolute;
+      inset-block: -0.35rem -0.15rem;
+      inline-size: 2px;
+      background: var(--fg);
+    }
+
+    .measures {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .measures li { margin-block: 0.9rem 0; }
+
+    .fill {
+      display: block;
+      block-size: 0.72rem;
+      inline-size: calc(var(--n) / 295.554 * 100%);
+      background: var(--accent);
+      border: 1px solid var(--fg);
+      margin-block-end: 0.28rem;
+    }
+
+    .bar {
+      display: flex;
+      inline-size: 100%;
+      min-block-size: 2rem;
+      margin-block: 1rem 0.6rem;
+    }
+
+    .band {
+      flex-basis: 0;
+      min-inline-size: 2px;
+      min-block-size: 2rem;
+      border-block: 1px solid var(--fg);
+      border-inline-end: 1px solid var(--fg);
+    }
+
+    .band:first-child { border-inline-start: 1px solid var(--fg); }
+    .band-image { background: var(--image); }
+    .band-built { background: var(--built); }
+    .band-pack { background: var(--pack); }
+    .band-source { background: var(--accent); }
+    .band-json { background: var(--json); }
+    .band-rest { background: var(--other); }
+
+    .key {
+      list-style: none;
+      margin: 0.25rem 0 0;
+      padding: 0;
+    }
+
+    .key li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-block: 0.28rem;
+      border-block-end: 1px solid var(--rule);
+    }
+
+    .swatch {
+      display: inline-block;
+      inline-size: 0.85rem;
+      block-size: 0.85rem;
+      margin-inline-end: 0.45rem;
+      border: 1px solid var(--fg);
+      vertical-align: -0.1rem;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: min(32rem, 70dvh);
+      margin-block: 1rem 1.35rem;
+      container: table-wrap / inline-size;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      inline-size: 100%;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    caption {
+      text-align: start;
+      font-size: 1.05rem;
+      margin-block-end: 0.55rem;
+    }
+
+    th, td {
+      padding: 0.4rem 0.55rem;
+      text-align: start;
+      vertical-align: top;
+      border-block-end: 1px solid var(--rule);
+      background: var(--bg);
+    }
+
+    thead th {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      font-weight: 560;
+    }
+
+    tbody th {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+      font-weight: 560;
+    }
+
+    td.num, th.num { text-align: end; }
+
+    @container table-wrap (width < 600px) {
+      table, thead, tbody, tr, th, td { display: block; }
+
+      thead { display: none; }
+
+      tr {
+        margin-block-end: 1.1rem;
+        border: 1px solid var(--fg);
+      }
+
+      tbody th {
+        position: sticky;
+        inset-block-start: 0;
+        inset-inline-start: auto;
+        z-index: 2;
+      }
+
+      td, th { text-align: start; }
+
+      td:nth-child(2)::before { content: var(--label-2) ": "; }
+      td:nth-child(3)::before { content: var(--label-3) ": "; }
+      td:nth-child(4)::before { content: var(--label-4) ": "; }
+      td:nth-child(5)::before { content: var(--label-5) ": "; }
+      td:nth-child(6)::before { content: var(--label-6) ": "; }
+      td:nth-child(7)::before { content: var(--label-7) ": "; }
+      td:nth-child(8)::before { content: var(--label-8) ": "; }
+    }
+
+    .chart-scroll {
+      overflow: auto;
+      max-inline-size: 100%;
+      margin-block: 0.5rem 0.25rem;
+      overscroll-behavior: contain;
+    }
+
+    svg.chart {
+      display: block;
+      inline-size: 100%;
+      min-inline-size: 34rem;
+      block-size: auto;
+      color: var(--fg);
+    }
+
+    .line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+    .line-full { stroke: var(--fg); }
+    .line-img { stroke: var(--image); }
+    .line-src { stroke: var(--accent); }
+    .grid { stroke: var(--rule); stroke-width: 1; }
+    .axis { fill: currentColor; font-size: 15px; font-family: inherit; }
+
+    figcaption { margin-block-start: 0.35rem; color: var(--soft); }
+
+    .legend { list-style: none; margin: 0.4rem 0 0; padding: 0; }
+    .legend li { margin-block: 0.15rem; }
+    .legend i {
+      display: inline-block;
+      inline-size: 1.6rem;
+      block-size: 0;
+      border-block-start: 3px solid var(--fg);
+      margin-inline-end: 0.45rem;
+      vertical-align: 0.28rem;
+    }
+    .legend .img i { border-block-start-color: var(--image); }
+    .legend .src i { border-block-start-color: var(--accent); }
+
+    footer {
+      margin-block-start: 3rem;
+      color: var(--soft);
+    }
+
+    @media (forced-colors: active) {
+      .fill, .band, .swatch {
+        background: Canvas;
+        border-color: CanvasText;
+      }
+      .mark { background: CanvasText; }
+      .line-full { stroke: CanvasText; }
+      .line-img { stroke: LinkText; }
+      .line-src { stroke: Highlight; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Site on chain, if the heavy files lived on IPFS</h1>
+    <p class="verdict">Not building it. Confidence 80% that leaving it unbuilt is right.</p>
+    <p>The public import of <code>site</code> origin plus tags was paid at 290.717 ALGO. The private plan for the same objects is 295.554 ALGO. Raster images are 169.060 ALGO of the object fee. Replacing those images with CID pointers leaves 133.442 ALGO private. Keeping source blobs, trees, and commits, and storing every other blob as a pointer, leaves 40.733 ALGO private. Keeping the source code and also turning specsync records and the <code>src/data</code> catalogues into pointers leaves 30.548 ALGO private. The <code>algochat</code> private import was 9.257 ALGO.</p>
+    <p class="soft">Each bar is a private fee. Full width is the as-stored plan, 295.554 ALGO. The mark is the <code>algochat</code> import at 9.257 ALGO.</p>
+    <div class="scale" aria-hidden="true">
+      <span class="mark" style="inset-inline-start: 3.132%"></span>
+    </div>
+    <ul class="measures">
+      <li>
+        <span class="fill" style="--n: 295.554" aria-hidden="true"></span>
+        As stored, 295.554 ALGO private
+      </li>
+      <li>
+        <span class="fill" style="--n: 133.442" aria-hidden="true"></span>
+        Images become CID pointers, 133.442 ALGO private
+      </li>
+      <li>
+        <span class="fill" style="--n: 40.733" aria-hidden="true"></span>
+        Source, trees, and commits stay, 40.733 ALGO private
+      </li>
+      <li>
+        <span class="fill" style="--n: 30.548" aria-hidden="true"></span>
+        Source code stays, catalogues become pointers, 30.548 ALGO private
+      </li>
+    </ul>
+    <p>The measured write of the full public history took 606.5 seconds, about 372 notes a second. At that rate the source-plus-pointer history is about 95 seconds, and the code-plus-pointer history is about 75 seconds. Private <code>site</code> was not pushed. The private fees use the same note surcharge as the offline plan, which matches that plan to the microALGO.</p>
+    <p>This does not replace the research note. The chain run, the mailboxes, and the <code>algochat</code> result are in <a href="onchain-git-remote.md">onchain-git-remote.md</a>.</p>
+
+    <h2>What the 290.694 ALGO of objects is</h2>
+    <p>Twenty-three ref notes add 0.023 ALGO and bring the public total to the 290.717 ALGO that was paid. The bar and the table below are the objects only. Ochre is the image portion. The words under the bar carry the same split.</p>
+    <div class="bar" aria-hidden="true">
+      <span class="band band-image" style="flex-grow: 169060147"></span>
+      <span class="band band-built" style="flex-grow: 41715664"></span>
+      <span class="band band-pack" style="flex-grow: 34003388"></span>
+      <span class="band band-source" style="flex-grow: 22514645"></span>
+      <span class="band band-json" style="flex-grow: 10258627"></span>
+      <span class="band band-rest" style="flex-grow: 13119681"></span>
+    </div>
+    <ul class="key">
+      <li><span><i class="swatch band-image" aria-hidden="true"></i>Raster images</span><span>169.060 ALGO</span></li>
+      <li><span><i class="swatch band-built" aria-hidden="true"></i>Built JS and CSS under <code>public/</code></span><span>41.716 ALGO</span></li>
+      <li><span><i class="swatch band-pack" aria-hidden="true"></i>Game packs, wasm, and one zip</span><span>34.003 ALGO</span></li>
+      <li><span><i class="swatch band-source" aria-hidden="true"></i>Source</span><span>22.515 ALGO</span></li>
+      <li><span><i class="swatch band-json" aria-hidden="true"></i>Published JSON under <code>public/</code></span><span>10.259 ALGO</span></li>
+      <li><span><i class="swatch band-rest" aria-hidden="true"></i>Trees, video, other published files, commits, SVG, fonts</span><span>13.120 ALGO</span></li>
+    </ul>
+    <p class="soft">Rounded to 0.001 ALGO, those six lines add to 290.673. The exact sum is 290.694.</p>
+
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-split">
+      <table class="composition" style="--label-2: 'Files'; --label-3: 'MiB'; --label-4: 'Notes'; --label-5: 'ALGO'; --label-6: 'Share'; --label-7: 'Median bytes'; --label-8: 'ALGO per MiB'">
+        <caption id="cap-split">Object fee by kind, origin plus tags. ALGO is rounded to 0.001. The total is the exact sum, 290.694 ALGO.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Kind</th>
+            <th scope="col" class="num">Files</th>
+            <th scope="col" class="num">MiB</th>
+            <th scope="col" class="num">Notes</th>
+            <th scope="col" class="num">ALGO</th>
+            <th scope="col" class="num">Share</th>
+            <th scope="col" class="num">Median bytes</th>
+            <th scope="col" class="num">ALGO per MiB</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Raster image</th>
+            <td class="num">9,808</td>
+            <td class="num">483.56</td>
+            <td class="num">130,821</td>
+            <td class="num">169.060</td>
+            <td class="num">58.2%</td>
+            <td class="num">8,334</td>
+            <td class="num">0.350</td>
+          </tr>
+          <tr>
+            <th scope="row">Built JS and CSS</th>
+            <td class="num">1,769</td>
+            <td class="num">120.25</td>
+            <td class="num">32,183</td>
+            <td class="num">41.716</td>
+            <td class="num">14.4%</td>
+            <td class="num">13,544</td>
+            <td class="num">0.347</td>
+          </tr>
+          <tr>
+            <th scope="row">Game pack</th>
+            <td class="num">5</td>
+            <td class="num">100.28</td>
+            <td class="num">25,997</td>
+            <td class="num">34.003</td>
+            <td class="num">11.7%</td>
+            <td class="num">16,375,580</td>
+            <td class="num">0.339</td>
+          </tr>
+          <tr>
+            <th scope="row">Source</th>
+            <td class="num">3,626</td>
+            <td class="num">60.91</td>
+            <td class="num">17,797</td>
+            <td class="num">22.515</td>
+            <td class="num">7.7%</td>
+            <td class="num">5,672</td>
+            <td class="num">0.370</td>
+          </tr>
+          <tr>
+            <th scope="row">Published JSON</th>
+            <td class="num">87</td>
+            <td class="num">30.12</td>
+            <td class="num">7,858</td>
+            <td class="num">10.259</td>
+            <td class="num">3.5%</td>
+            <td class="num">115,206</td>
+            <td class="num">0.341</td>
+          </tr>
+          <tr>
+            <th scope="row">Tree</th>
+            <td class="num">3,881</td>
+            <td class="num">3.97</td>
+            <td class="num">4,319</td>
+            <td class="num">4.518</td>
+            <td class="num">1.6%</td>
+            <td class="num">332</td>
+            <td class="num">1.139</td>
+          </tr>
+          <tr>
+            <th scope="row">Video</th>
+            <td class="num">136</td>
+            <td class="num">12.28</td>
+            <td class="num">3,248</td>
+            <td class="num">4.224</td>
+            <td class="num">1.5%</td>
+            <td class="num">69,773</td>
+            <td class="num">0.344</td>
+          </tr>
+          <tr>
+            <th scope="row">Other published file</th>
+            <td class="num">617</td>
+            <td class="num">8.25</td>
+            <td class="num">2,504</td>
+            <td class="num">3.132</td>
+            <td class="num">1.1%</td>
+            <td class="num">2,163</td>
+            <td class="num">0.380</td>
+          </tr>
+          <tr>
+            <th scope="row">Commit</th>
+            <td class="num">565</td>
+            <td class="num">0.88</td>
+            <td class="num">590</td>
+            <td class="num">0.631</td>
+            <td class="num">0.2%</td>
+            <td class="num">1,274</td>
+            <td class="num">0.716</td>
+          </tr>
+          <tr>
+            <th scope="row">SVG</th>
+            <td class="num">200</td>
+            <td class="num">0.92</td>
+            <td class="num">373</td>
+            <td class="num">0.437</td>
+            <td class="num">0.2%</td>
+            <td class="num">1,157</td>
+            <td class="num">0.475</td>
+          </tr>
+          <tr>
+            <th scope="row">Font</th>
+            <td class="num">15</td>
+            <td class="num">0.56</td>
+            <td class="num">156</td>
+            <td class="num">0.200</td>
+            <td class="num">0.1%</td>
+            <td class="num">24,344</td>
+            <td class="num">0.359</td>
+          </tr>
+          <tr>
+            <th scope="row">Objects, total</th>
+            <td class="num">20,709</td>
+            <td class="num">821.97</td>
+            <td class="num">225,846</td>
+            <td class="num">290.694</td>
+            <td class="num">100%</td>
+            <td class="num"></td>
+            <td class="num">0.354</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A byte of image and a byte of source pay almost the same, about 0.35 to 0.37 ALGO per MiB. Images dominate because they are 484 MiB. Trees cost 1.139 ALGO per MiB because a median tree is 332 bytes and still pays a whole 0.001 ALGO note.</p>
+    <p>The fee schedule does not single out pictures. 4,827 image blobs under 8 KiB cost 9.046 ALGO, 5.4% of the image fee. 239 image blobs of 1 MiB or more cost 102.362 ALGO, 60.5% of the image fee. PNG is 4,961 blobs and 152.952 ALGO. WebP is 4,775 blobs and only 9.277 ALGO, because the median WebP is 4,178 bytes.</p>
+
+    <h2>Inside the 22.515 ALGO called source</h2>
+    <p>The source bucket is every blob that is not a raster image, video, pack, font, SVG, or a file under <code>public/</code>. A lot of it is snapshots.</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-source">
+      <table style="--label-2: 'Files'; --label-3: 'MiB'; --label-4: 'Median bytes'; --label-5: 'ALGO'">
+        <caption id="cap-source">The source bucket, split by path. These five rows sum to 22.515 ALGO.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Group</th>
+            <th scope="col" class="num">Files</th>
+            <th scope="col" class="num">MiB</th>
+            <th scope="col" class="num">Median bytes</th>
+            <th scope="col" class="num">ALGO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Code under <code>src/</code>, excluding <code>src/data</code></th>
+            <td class="num">1,819</td>
+            <td class="num">24.14</td>
+            <td class="num">10,346</td>
+            <td class="num">9.005</td>
+          </tr>
+          <tr>
+            <th scope="row">Specsync records</th>
+            <td class="num">1,051</td>
+            <td class="num">16.40</td>
+            <td class="num">1,220</td>
+            <td class="num">6.218</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>src/data</code> catalogues</th>
+            <td class="num">178</td>
+            <td class="num">14.54</td>
+            <td class="num">8,871</td>
+            <td class="num">5.005</td>
+          </tr>
+          <tr>
+            <th scope="row">Other source</th>
+            <td class="num">313</td>
+            <td class="num">3.55</td>
+            <td class="num">4,153</td>
+            <td class="num">1.372</td>
+          </tr>
+          <tr>
+            <th scope="row">Docs and Markdown</th>
+            <td class="num">265</td>
+            <td class="num">2.30</td>
+            <td class="num">5,858</td>
+            <td class="num">0.915</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Six historical copies of one specsync <code>approvals.json</code> run from about 1.2 MB to 2.0 MB. Repeated copies of <code>src/data/jayCatalogue.json</code> sit near 975 KB. Those files are why “source” is 22.515 ALGO and the code under <code>src/</code> is 9.005.</p>
+
+    <h2>If the heavy bytes were CID pointers</h2>
+    <p>A pointer here is a 72-byte blob, an <code>ipfs://</code> CID and a short label. Its canonical object is 80 bytes, one note, 0.001 ALGO. Any pointer under about 970 bytes of content stays on that minimum. Tree and commit sizes do not change, because a git tree stores a 20-byte object id either way. Replacing a blob does change history: the new blob has a new id, and every tree that points at it is rewritten. The prices below are that rewritten object set. They were not committed and not pushed. IPFS pinning is not in the fee. A CID with no pin does not fetch.</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-cid">
+      <table style="--label-2: 'Private ALGO'; --label-3: 'Public ALGO'; --label-4: 'Public notes'; --label-5: 'Write'">
+        <caption id="cap-cid">CID counterfactuals on the same origin-plus-tags objects. Public fees include the 23 ref notes. Write time uses the measured 372 notes a second, except the as-stored public push, which was timed.</caption>
+        <thead>
+          <tr>
+            <th scope="col">What stays as git blobs</th>
+            <th scope="col" class="num">Private ALGO</th>
+            <th scope="col" class="num">Public ALGO</th>
+            <th scope="col" class="num">Public notes</th>
+            <th scope="col" class="num">Write</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Everything, as stored</th>
+            <td class="num">295.554</td>
+            <td class="num">290.717</td>
+            <td class="num">225,869</td>
+            <td class="num">606.5 s, measured</td>
+          </tr>
+          <tr>
+            <th scope="row">Everything except raster images</th>
+            <td class="num">133.442</td>
+            <td class="num">131.465</td>
+            <td class="num">104,856</td>
+            <td class="num">282 s</td>
+          </tr>
+          <tr>
+            <th scope="row">Source, JSON, other published files, SVG, trees, commits</th>
+            <td class="num">53.852</td>
+            <td class="num">53.248</td>
+            <td class="num">45,197</td>
+            <td class="num">121 s</td>
+          </tr>
+          <tr>
+            <th scope="row">Source, trees, and commits</th>
+            <td class="num">40.733</td>
+            <td class="num">40.324</td>
+            <td class="num">35,366</td>
+            <td class="num">95 s</td>
+          </tr>
+          <tr>
+            <th scope="row">Source code, docs, trees, and commits</th>
+            <td class="num">30.548</td>
+            <td class="num">30.330</td>
+            <td class="num">27,786</td>
+            <td class="num">75 s</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The third row turns images, video, fonts, game packs, and built JS and CSS into pointers. Published JSON stays, which is why it is 53.852 ALGO private rather than 40.733. Video by itself is 4.224 ALGO, so moving video as well as images changes the public price from 131.465 to 127.377. The last row also turns specsync records and <code>src/data</code> into pointers. Of that 30.548 ALGO, 13.866 is the pointer notes themselves: 13,866 historical blobs, each one minimum-fee note.</p>
+    <p>9,807 of the 9,808 image blobs are reachable from <code>origin/main</code>. The pictures are the live tree. One image blob is only on another ref. Future commits cost blob prices again the moment a PNG, a pack, or a bundle is committed as bytes.</p>
+
+    <h2>Month by month</h2>
+    <p>Committer dates, May through October 2026. Each blob is charged in the month it first appears. Root trees that the diff listing omitted are charged with the commit that introduced them. The full line ends at 290.694 ALGO. October adds 169.566 of that, and 136.901 of October is images.</p>
+    <figure>
+      <div class="chart-scroll" tabindex="0" role="region" aria-labelledby="cap-chart">
+        <svg class="chart" viewBox="0 0 640 310" role="img" aria-labelledby="chart-title chart-desc">
+          <title id="chart-title">Cumulative object fee from May 2026 to October 2026</title>
+          <desc id="chart-desc">Three lines. Full objects grow from 1.53 ALGO in May to 19.82 in June, 39.69 in July, 54.99 in August, 121.13 in September, and 290.69 in October. With raster images replaced by CID pointers the line ends at 131.44 ALGO. With only source, trees, and commits stored in full it ends at 40.30 ALGO. The same figures are in the table that follows.</desc>
+          <g aria-hidden="true">
+            <line class="grid" x1="58" y1="258" x2="598" y2="258"></line>
+            <line class="grid" x1="58" y1="179.3" x2="598" y2="179.3"></line>
+            <line class="grid" x1="58" y1="100.7" x2="598" y2="100.7"></line>
+            <line class="grid" x1="58" y1="22" x2="598" y2="22"></line>
+            <text class="axis" x="50" y="262" text-anchor="end">0</text>
+            <text class="axis" x="50" y="183" text-anchor="end">100</text>
+            <text class="axis" x="50" y="105" text-anchor="end">200</text>
+            <text class="axis" x="50" y="26" text-anchor="end">300</text>
+            <text class="axis" x="58" y="286" text-anchor="middle">May</text>
+            <text class="axis" x="166" y="286" text-anchor="middle">Jun</text>
+            <text class="axis" x="274" y="286" text-anchor="middle">Jul</text>
+            <text class="axis" x="382" y="286" text-anchor="middle">Aug</text>
+            <text class="axis" x="490" y="286" text-anchor="middle">Sep</text>
+            <text class="axis" x="598" y="286" text-anchor="middle">Oct</text>
+            <polyline class="line line-full" points="58.0,256.8 166.0,242.4 274.0,226.8 382.0,214.7 490.0,162.7 598.0,29.3"></polyline>
+            <polyline class="line line-img" points="58.0,256.9 166.0,249.7 274.0,234.6 382.0,226.0 490.0,184.3 598.0,154.6"></polyline>
+            <polyline class="line line-src" points="58.0,257.0 166.0,253.1 274.0,250.8 382.0,245.5 490.0,233.5 598.0,226.3"></polyline>
+          </g>
+        </svg>
+      </div>
+      <figcaption id="cap-chart">Cumulative ALGO of git objects by committer month, 2026. The vertical scale is ALGO. The table below is the same series.</figcaption>
+      <ul class="legend">
+        <li><i aria-hidden="true"></i>Full objects</li>
+        <li class="img"><i aria-hidden="true"></i>Raster images replaced by CID pointers</li>
+        <li class="src"><i aria-hidden="true"></i>Source, trees, and commits kept</li>
+      </ul>
+    </figure>
+
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-months">
+      <table style="--label-2: 'New ALGO'; --label-3: 'Of which images'; --label-4: 'Cumulative, full'; --label-5: 'Cumulative, images as CIDs'; --label-6: 'Cumulative, source plus pointers'">
+        <caption id="cap-months">New and cumulative object fees by committer month. Cumulative columns omit the 0.023 ALGO of ref notes.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Month</th>
+            <th scope="col" class="num">New ALGO</th>
+            <th scope="col" class="num">Of which images</th>
+            <th scope="col" class="num">Cumulative, full</th>
+            <th scope="col" class="num">Cumulative, images as CIDs</th>
+            <th scope="col" class="num">Cumulative, source plus pointers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><time datetime="2026-05">May 2026</time></th>
+            <td class="num">1.534</td>
+            <td class="num">0.206</td>
+            <td class="num">1.534</td>
+            <td class="num">1.336</td>
+            <td class="num">1.293</td>
+          </tr>
+          <tr>
+            <th scope="row"><time datetime="2026-06">June 2026</time></th>
+            <td class="num">18.285</td>
+            <td class="num">9.347</td>
+            <td class="num">19.819</td>
+            <td class="num">10.590</td>
+            <td class="num">6.258</td>
+          </tr>
+          <tr>
+            <th scope="row"><time datetime="2026-07">July 2026</time></th>
+            <td class="num">19.871</td>
+            <td class="num">0.796</td>
+            <td class="num">39.690</td>
+            <td class="num">29.684</td>
+            <td class="num">9.164</td>
+          </tr>
+          <tr>
+            <th scope="row"><time datetime="2026-08">August 2026</time></th>
+            <td class="num">15.298</td>
+            <td class="num">4.719</td>
+            <td class="num">54.988</td>
+            <td class="num">40.736</td>
+            <td class="num">15.926</td>
+          </tr>
+          <tr>
+            <th scope="row"><time datetime="2026-09">September 2026</time></th>
+            <td class="num">66.140</td>
+            <td class="num">17.090</td>
+            <td class="num">121.128</td>
+            <td class="num">93.644</td>
+            <td class="num">31.139</td>
+          </tr>
+          <tr>
+            <th scope="row"><time datetime="2026-10">October 2026</time></th>
+            <td class="num">169.566</td>
+            <td class="num">136.901</td>
+            <td class="num">290.694</td>
+            <td class="num">131.442</td>
+            <td class="num">40.301</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The mean month is 48.449 ALGO and the median month is about 19 ALGO. October is 58% of the object fee. May was 1.534 ALGO, almost all source. July’s new fee is published JSON and built files, not pictures. September brings the first game packs and a large batch of built JS. October is the nevermore-scale image drop plus the rest of the peck packs.</p>
+
+    <h2>Averages</h2>
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-avg">
+      <table style="--label-2: 'Files'; --label-3: 'Median bytes'; --label-4: 'Mean bytes'; --label-5: 'ALGO per file'; --label-6: 'ALGO per MiB'">
+        <caption id="cap-avg">Per-file averages. A CID pointer is the comparison row: one note, 0.001 ALGO, whatever the file used to weigh.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Group</th>
+            <th scope="col" class="num">Files</th>
+            <th scope="col" class="num">Median bytes</th>
+            <th scope="col" class="num">Mean bytes</th>
+            <th scope="col" class="num">ALGO per file</th>
+            <th scope="col" class="num">ALGO per MiB</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Raster image</th>
+            <td class="num">9,808</td>
+            <td class="num">8,334</td>
+            <td class="num">51,698</td>
+            <td class="num">0.017</td>
+            <td class="num">0.350</td>
+          </tr>
+          <tr>
+            <th scope="row">PNG</th>
+            <td class="num">4,961</td>
+            <td class="num">9,930</td>
+            <td class="num">93,605</td>
+            <td class="num">0.031</td>
+            <td class="num">0.345</td>
+          </tr>
+          <tr>
+            <th scope="row">WebP</th>
+            <td class="num">4,775</td>
+            <td class="num">4,178</td>
+            <td class="num">4,537</td>
+            <td class="num">0.002</td>
+            <td class="num">0.449</td>
+          </tr>
+          <tr>
+            <th scope="row">Image, under 8 KiB</th>
+            <td class="num">4,827</td>
+            <td class="num"></td>
+            <td class="num">4,322</td>
+            <td class="num">0.002</td>
+            <td class="num">0.455</td>
+          </tr>
+          <tr>
+            <th scope="row">Image, 1 MiB and over</th>
+            <td class="num">239</td>
+            <td class="num"></td>
+            <td class="num">1,323,112</td>
+            <td class="num">0.428</td>
+            <td class="num">0.339</td>
+          </tr>
+          <tr>
+            <th scope="row">Built JS and CSS</th>
+            <td class="num">1,769</td>
+            <td class="num">13,544</td>
+            <td class="num">71,279</td>
+            <td class="num">0.024</td>
+            <td class="num">0.347</td>
+          </tr>
+          <tr>
+            <th scope="row">Code under <code>src/</code></th>
+            <td class="num">1,819</td>
+            <td class="num">10,346</td>
+            <td class="num">13,914</td>
+            <td class="num">0.005</td>
+            <td class="num">0.373</td>
+          </tr>
+          <tr>
+            <th scope="row">Tree</th>
+            <td class="num">3,881</td>
+            <td class="num">332</td>
+            <td class="num">1,071</td>
+            <td class="num">0.001</td>
+            <td class="num">1.139</td>
+          </tr>
+          <tr>
+            <th scope="row">CID pointer</th>
+            <td class="num"></td>
+            <td class="num">72</td>
+            <td class="num">72</td>
+            <td class="num">0.001</td>
+            <td class="num"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Mean image bytes are six times the median. The mean month is more than twice the median month. Both averages hide a tail: a few hundred large PNGs, and one calendar month.</p>
+
+    <h2>Where the fee sits in the tree</h2>
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-dir">
+      <table style="--label-2: 'Files'; --label-3: 'MiB'; --label-4: 'ALGO'">
+        <caption id="cap-dir">Largest directories by object fee. A directory mixes kinds. <code>public/algorand</code> is mostly JavaScript bundles, 1,437 files and 92.2 MiB of <code>.js</code>.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Directory</th>
+            <th scope="col" class="num">Files</th>
+            <th scope="col" class="num">MiB</th>
+            <th scope="col" class="num">ALGO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><code>public/nevermore</code></th>
+            <td class="num">648</td>
+            <td class="num">374.14</td>
+            <td class="num">127.157</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/peck</code></th>
+            <td class="num">22</td>
+            <td class="num">109.28</td>
+            <td class="num">37.063</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/algorand</code></th>
+            <td class="num">1,521</td>
+            <td class="num">93.50</td>
+            <td class="num">32.544</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/arcsite</code></th>
+            <td class="num">830</td>
+            <td class="num">50.67</td>
+            <td class="num">17.610</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/jay</code></th>
+            <td class="num">4,154</td>
+            <td class="num">40.41</td>
+            <td class="num">16.124</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>src</code></th>
+            <td class="num">1,997</td>
+            <td class="num">38.68</td>
+            <td class="num">14.010</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/3md</code></th>
+            <td class="num">294</td>
+            <td class="num">30.77</td>
+            <td class="num">10.565</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/visit</code></th>
+            <td class="num">4,711</td>
+            <td class="num">19.65</td>
+            <td class="num">8.910</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>.specsync</code></th>
+            <td class="num">1,051</td>
+            <td class="num">16.40</td>
+            <td class="num">6.218</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>public/nevermore</code> alone is 127.157 ALGO, 44% of the object fee, in 648 files. <code>public/jay</code> and <code>public/visit</code> are the opposite shape: thousands of smaller files, 16.124 and 8.910 ALGO.</p>
+
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-big">
+      <table style="--label-2: 'Kind'; --label-3: 'Month'; --label-4: 'Bytes'; --label-5: 'ALGO'">
+        <caption id="cap-big">The eight blobs with the highest fees. Three of them are versions of <code>public/peck/play/index.pck</code>.</caption>
+        <thead>
+          <tr>
+            <th scope="col">File</th>
+            <th scope="col">Kind</th>
+            <th scope="col">Month</th>
+            <th scope="col" class="num">Bytes</th>
+            <th scope="col" class="num">ALGO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><code>public/peck/play/index.wasm</code></th>
+            <td>Game pack</td>
+            <td><time datetime="2026-09">Sep 2026</time></td>
+            <td class="num">39,514,754</td>
+            <td class="num">12.778</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/peck/play/index.pck</code></th>
+            <td>Game pack</td>
+            <td><time datetime="2026-10">Oct 2026</time></td>
+            <td class="num">24,258,712</td>
+            <td class="num">7.845</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/peck/play/index.pck</code></th>
+            <td>Game pack</td>
+            <td><time datetime="2026-09">Sep 2026</time></td>
+            <td class="num">16,375,580</td>
+            <td class="num">5.296</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/peck/play/index.pck</code></th>
+            <td>Game pack</td>
+            <td><time datetime="2026-10">Oct 2026</time></td>
+            <td class="num">15,957,272</td>
+            <td class="num">5.160</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/peck/world/peck-world-previews.zip</code></th>
+            <td>Game pack</td>
+            <td><time datetime="2026-10">Oct 2026</time></td>
+            <td class="num">9,044,498</td>
+            <td class="num">2.925</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/arcsite/examples/whole-earth/data/archive.json</code></th>
+            <td>Published JSON</td>
+            <td><time datetime="2026-07">Jul 2026</time></td>
+            <td class="num">4,804,466</td>
+            <td class="num">1.554</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/nevermore/3748910052.png</code></th>
+            <td>Raster image</td>
+            <td><time datetime="2026-10">Oct 2026</time></td>
+            <td class="num">4,103,375</td>
+            <td class="num">1.327</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>public/arcsite/examples/cinema-ledger/data/archive.json</code></th>
+            <td>Published JSON</td>
+            <td><time datetime="2026-07">Jul 2026</time></td>
+            <td class="num">3,678,092</td>
+            <td class="num">1.190</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Is it worth it</h2>
+    <p>No, for the repository as it is stored. The public payment was 290.717 ALGO and 225,869 notes. The private plan is 295.554 ALGO. That is a LocalNet proof that the bytes fit, funded so the fee could not be the reason it failed. It is the wrong remote to hand anyone for <code>site</code>.</p>
+    <p>No, if the only change is that images move to IPFS. 133.442 ALGO private remains, because built bundles are 41.716, the peck packs are 34.003, published JSON is 10.259, and video is 4.224. Those files are on <code>origin/main</code>, in the same history as the pictures.</p>
+    <p>A later private archive of the source is the case that is merely expensive. 40.733 ALGO if every non-source blob is a pointer. 30.548 ALGO if specsync snapshots and the catalogues are pointers too. Both are three to four times the <code>algochat</code> remote, and both sit above the budget that matched the measurements: under 10 ALGO and under a minute for a full history. The <code>algochat</code>-sized case is the only size that fit, and we are not building that remote either. October shows what one month costs when image, pack, bundle, and catalogue bytes are committed as git blobs.</p>
+    <p>A public on-chain remote stays a no. The public fee is a few ALGO under the private fee. Anyone who can read the chain can read the file bytes. GitHub remains the forge.</p>
+
+    <h2>Confidence</h2>
+    <p>85% is the confidence in that verdict. It is not an average of the rows below. The prices are tighter than the product call. IPFS pinning was not priced, and that cost sits outside the rating.</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="cap-conf">
+      <table style="--label-2: 'Confidence'">
+        <caption id="cap-conf">Confidence in each part of the measurement.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Claim</th>
+            <th scope="col" class="num">Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">The public object fee is 290.717 ALGO, 225,869 notes, and this page’s fee function reproduces that payment exactly</th>
+            <td class="num">99%</td>
+          </tr>
+          <tr>
+            <th scope="row">Raster images are 169.060 ALGO, they are real image bytes, and 9,807 of 9,808 are on <code>origin/main</code></th>
+            <td class="num">96%</td>
+          </tr>
+          <tr>
+            <th scope="row">The month series is committer-dated and ends on the same 290.694 ALGO of objects</th>
+            <td class="num">94%</td>
+          </tr>
+          <tr>
+            <th scope="row">A 72-byte CID pointer is one 0.001 ALGO note, and tree fees do not move because object ids stay 20 bytes</th>
+            <td class="num">93%</td>
+          </tr>
+          <tr>
+            <th scope="row">Built bundles, packs, published JSON, and source are separated by path the way the tables say</th>
+            <td class="num">90%</td>
+          </tr>
+          <tr>
+            <th scope="row">30 to 41 ALGO is not the first remote to build</th>
+            <td class="num">80%</td>
+          </tr>
+          <tr>
+            <th scope="row">The verdict on this page</th>
+            <td class="num">85%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>What was checked. The fee function, 1,000 µALGO through 1,024 bytes and the protocol surcharge after that, reproduces the chain payment with zero residual once the 23 ref notes are included. The same function reproduces the offline private plan: 229,513 notes and 295.554 ALGO. The largest PNG prefixes are PNG. No raster blob is under 200 bytes, and none of the sniffed bodies is a Git LFS pointer. The path recorded when a blob first appeared and the path from <code>git rev-list --objects</code> never disagree on which bucket a blob is in. All 20,709 objects have a committer month, including 548 root trees the diff listing did not print. <code>public/algorand</code> was opened by extension: 92.2 MiB of it is <code>.js</code>.</p>
+    <p>What was not done. The repository was not rewritten with CID blobs, and it was not pushed a second time. Every image header was not read, only the largest and the suspicious small ones. A hand-written script under <code>public/</code> would be counted with the built bundles. Moving 10% of that 41.716 ALGO into source would shift the source-plus-pointer price by about 4 ALGO. Pinning, gateways, and the durability of the CID are unmeasured.</p>
+
+    <footer>
+      <p>Measured 24 October 2026 from <code>origin</code> plus tags at <code>origin/main</code> <code>a658383d1f968daced4eba86a0ee22d7950756b3</code>. Public object mailbox <code>3SGWVEFQBYI6N4JSYXCCWRHLOX6OYRR6O4XZRFENEW6GFIJGYW3T4JZSGQ</code>. First note <code>ELYI4CKFAET3HUP2PMEAUO5H3IPBLEBZ3OJ6KF5Y4Z7Y4U3DQNZQ</code>, last note <code>OTGTORHAEAS7YPAZBNOPWGHK5P7PWCPRI34WWPIACQMHQVARUBNA</code>, rounds 153620 to 167836. Local file. Open it in a browser. No network requests.</p>
+    </footer>
+  </main>
+</body>
+</html>

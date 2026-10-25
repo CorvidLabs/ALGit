@@ -1,0 +1,23 @@
+{
+  "name": "algit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pin files CorvidLabs already publishes to the CorvidLabs Pinata account.",
+  "type": "module",
+  "bin": {
+    "algit": "src/cli.ts"
+  },
+  "scripts": {
+    "algit": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "pinata": "^2.5.5"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.21",
+    "typescript": "^5.9.2"
+  }
+}
