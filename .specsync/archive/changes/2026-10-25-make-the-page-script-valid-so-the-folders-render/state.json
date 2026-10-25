@@ -7,11 +7,11 @@
   "title": "Make the page script valid so the folders render",
   "description": "Make the page script valid so the folders render",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "e3627bb888a51b19a8b417ea95ca79e423c92d22",
   "created_at": 1792948197,
-  "updated_at": 1792948298,
+  "updated_at": 1792948468,
   "affected_specs": [
     "algit"
   ],

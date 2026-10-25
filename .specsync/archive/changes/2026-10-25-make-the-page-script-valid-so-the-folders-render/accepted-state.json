@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "make-the-page-script-valid-so-the-folders-render",
+  "slug": "make-the-page-script-valid-so-the-folders-render",
+  "title": "Make the page script valid so the folders render",
+  "description": "Make the page script valid so the folders render",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "e3627bb888a51b19a8b417ea95ca79e423c92d22",
+  "created_at": 1792948197,
+  "updated_at": 1792948375,
+  "affected_specs": [
+    "algit"
+  ],
+  "affected_paths": [
+    "py/algit/command.py"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The page script is valid JavaScript.",
+    "A browser shows the folders and the open file."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "yes"
+  }
+}

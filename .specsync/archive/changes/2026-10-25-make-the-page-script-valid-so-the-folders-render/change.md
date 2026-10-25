@@ -1,6 +1,6 @@
 ---
 id: make-the-page-script-valid-so-the-folders-render
-state: implementing
+state: archived
 type: bug_fix
 base_commit: e3627bb888a51b19a8b417ea95ca79e423c92d22
 ---

@@ -1,0 +1,52 @@
+{
+  "timestamp": 1792948292,
+  "commit": "55a8635944348ae7c123ea88465a952adfebfcb2",
+  "contract_digest": "a94baa8545e1104f9256efe6caa0937062009e2b7b46ac73400d5fc14c6c2610",
+  "execution_digest": "3ce840640f6ba1d54ad5c0495c6e09895eeaf49d2b0370c82126555740229aee",
+  "workspace_digest": "cd8864759addf762fc0339556787c8aa1663a1600675783e4be32c3afbd1952b",
+  "acceptance_input_digest": "3906a6abcb6824de58c0f0cefbfb01db492ca3a07b6b1aed868a0ffe028e7dd1",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "py/algit/command.py",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b5e55a9ca09e130889803422091d4729c8d507ab988e2013619165da97ecb42d",
+        "entry_digest": "30ca35f49bf9c040ce925d9ff6e27f31a34a09c59f909d57fcc5c1cfee4b588b",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "specs/algit/algit.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4c301e8452472d6f4cb009eb5f6b90c9e289b1a094c1edb77fedebe7bb8c0435",
+        "entry_digest": "001ca76152ca2f9657db771da9c8aa80c412f7f26ed62f86e024edcda06ce372",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "specs/algit/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "79adfb723db1e2cbe44381a595bb759e07ead19149ab55df26c80676c9fb924f",
+        "entry_digest": "b25db2d801ea205b0adf7323ea170d2e470854e121ce0432f41714fa415bf27a",
+        "owners": [
+          "algit"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec algit",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}
