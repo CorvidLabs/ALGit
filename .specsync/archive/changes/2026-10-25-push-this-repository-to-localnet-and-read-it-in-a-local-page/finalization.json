@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "push-this-repository-to-localnet-and-read-it-in-a-local-page",
+  "implementation_commit": "4b98ea8bbc860d3c55796080741903b28d1a6e26",
+  "implementation_tree": "5718ef07ea98cbf6631e57c302ecf76b923382e1",
+  "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+  "workspace_digest": "1c616383c4ef3bbf7399711717702ce2d4e842deaaf18a3b0871f3359aa47909",
+  "closing_digest": "916cd7679d8e88c02086f7d51a35d762ff5c2c1a20e0b2eced41ff398fd5f190",
+  "review_digest": "e5bde6e3bfba4ec369d07582fd5aead85bd81f6e076252dc35ad4555bc020a09",
+  "finalization_digest": "ec19d9853d5ae2c1661889bb624da26f31c0a82054a83a95d431ef7d7d0b0107",
+  "timestamp": 1792946482
+}

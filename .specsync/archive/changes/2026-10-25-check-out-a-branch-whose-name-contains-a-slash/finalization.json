@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "check-out-a-branch-whose-name-contains-a-slash",
+  "implementation_commit": "15253569518540602bc2fcb681eb89c175c5e286",
+  "implementation_tree": "70f064016ffdea21262758f8e0beae2cc5bd7a3d",
+  "contract_digest": "f8bb0089b563e361a91a93f0df413130c98ce7dee73503e73e63bc18f249a35e",
+  "workspace_digest": "ac7ab75b8afbb277a2f5c6086fb981282c03ce99b3737729f9ce74d7cb83bac2",
+  "closing_digest": "35fc8f18241967873ea16403e1c4adac22511974a22d038708946d50c88c6dd1",
+  "review_digest": "6142663cc3431d09b6771e41ae616805f3964b111c51739a4a03792fffca892e",
+  "finalization_digest": "31533a0a921145a2e925130e0a97c1337c05114d446c577d73066c1d9a635b8c",
+  "timestamp": 1792946736
+}

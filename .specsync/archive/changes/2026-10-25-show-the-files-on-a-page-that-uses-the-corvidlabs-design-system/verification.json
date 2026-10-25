@@ -1,0 +1,102 @@
+{
+  "timestamp": 1792947217,
+  "commit": "c721321bba5a6444b40869345c52705fac847ac5",
+  "contract_digest": "85e59e9d52af2c6a5a5e83be00072045bed827366c76ce6572d4839d3880098f",
+  "execution_digest": "81ecc3db6d09cc2a23790690bcf45bff2f4cff5de5d6612ad30ee4d0337966c6",
+  "workspace_digest": "8b4cf36c59e13035c11d5ebd92295362dfc23ddc6492e651aeb024839992c87d",
+  "acceptance_input_digest": "690b92e76d9b690a38e10e44fab8db2c3d19ab2cce030d094cacfad656d8ca69",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "py/algit/brand",
+        "kind": "non_file",
+        "mode": 0,
+        "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "entry_digest": "5c7869e4e60d5179db7992b93bbf794aae18cd3885829a5ba5a6c89516b8c1a6",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "py/algit/brand/logo-mark.svg",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1f1e878ed1dd56e1a6aa6c29634eb2d7aae09d8dae177389395b239f1fe8f556",
+        "entry_digest": "14a3215854bbd09813b6bba305e964eed81ed0f1cb02ade61279f41edb961456",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "py/algit/brand/theme.js",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "51c2811c7a2384fcef423231a047bf8ff991a32dc7016c2f505b404650a34050",
+        "entry_digest": "d9718324dab093d37c28282a5629efa26fc889ff4bcf66d91dcb492736b662f7",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "py/algit/brand/tokens.css",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b0d02d6a2086c4adeaacf3dfbc2dbeaea60da023124ad0bd97c259ac738648aa",
+        "entry_digest": "771042777ba65463604d0886e9763a1c9479cd30ebaac525dc7fe3a8cf94d8d2",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "py/algit/command.py",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "07ee9efb029ab7a2a5a3c342b89b8bbd76a462b48b96b692bac3b383b04e2e24",
+        "entry_digest": "b0fb2f2cae23c43964cc17893d8ae5a3d396729efb26af56011ab4b8ddc64ad0",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "specs/algit/algit.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "da977237bebf99b48a844a3484b716c2e2401f976bff9c6bf7c3da4b14326d45",
+        "entry_digest": "71bb44664a5f5029c3f71423a2635bed8b994e1ff3e8c379f8dc749c86880e6c",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "specs/algit/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "79adfb723db1e2cbe44381a595bb759e07ead19149ab55df26c80676c9fb924f",
+        "entry_digest": "b25db2d801ea205b0adf7323ea170d2e470854e121ce0432f41714fa415bf27a",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "tests/test_remote.py",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c238a1c15f79e33da7dd58eca59b450fafe642507be28f1abb1e66371019e25a",
+        "entry_digest": "31b3e75fc6b2969a983b62c0eaab4d66b84fbdd40b9455eda7fea3c0bed923cd",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec algit",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

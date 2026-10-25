@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "show-the-algo-total-and-the-repository-size-on-the-page",
+  "implementation_commit": "7a0a8b3307cf938d7b04b9e8fccf8e88e623ce7a",
+  "implementation_tree": "758679653a8ed60ecba5c321e72adb213724fd29",
+  "contract_digest": "1b38ed144b6d3d95c93030b70bbd1aaf15bb269acecba72a0073384dd2178312",
+  "workspace_digest": "fea18cc2124547b3871875ef57edec96475c4184dd8576ed60a9704c449cbf08",
+  "closing_digest": "8e11edbc47eef663de5d9fe370c7a71487cad50fce8957b1da25b618189feeab",
+  "review_digest": "d74c0ea5c231f3a4c4d8294a3dec252acd2f9053840f4b9c4c7be0e88086a602",
+  "finalization_digest": "b9313eb4bb11b4d2ace1d1ecd73efad61b9c6ea541296efbb00307ab7f45405e",
+  "timestamp": 1792949097
+}

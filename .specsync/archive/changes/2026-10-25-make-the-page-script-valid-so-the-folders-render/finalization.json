@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "make-the-page-script-valid-so-the-folders-render",
+  "implementation_commit": "55a8635944348ae7c123ea88465a952adfebfcb2",
+  "implementation_tree": "af0b52e2a1a3264e1efc9807575a9c3cde4a76d0",
+  "contract_digest": "a94baa8545e1104f9256efe6caa0937062009e2b7b46ac73400d5fc14c6c2610",
+  "workspace_digest": "cd8864759addf762fc0339556787c8aa1663a1600675783e4be32c3afbd1952b",
+  "closing_digest": "6f1f73ad162d383c42f5ccb5acab70692ae0601dd46e6390690f9f33ebe22b41",
+  "review_digest": "c8d4b7935ec6368b37c49727522d6f431c3d0234968da8f9e819425ee8f1649e",
+  "finalization_digest": "c5788aceb6f6d899fbe6a3e86dae404959cc246dece349aae61a585b27fdb03d",
+  "timestamp": 1792948375
+}

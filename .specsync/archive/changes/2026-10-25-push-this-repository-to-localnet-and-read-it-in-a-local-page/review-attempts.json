@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "push-this-repository-to-localnet-and-read-it-in-a-local-page",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "4b98ea8bbc860d3c55796080741903b28d1a6e26",
+      "contract_digest": "57889db5f877f780094f7451cededbb514eface6f2dc5556474b4127c1637033",
+      "execution_digest": "0944ec98d97ef6b572f56acb1e9b363a0399ffb1fd0c3c040c0aa03022151efd",
+      "workspace_digest": "1c616383c4ef3bbf7399711717702ce2d4e842deaaf18a3b0871f3359aa47909",
+      "timestamp": 1792946472
+    }
+  ]
+}

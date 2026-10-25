@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1792948249,
+      "digest": "a94baa8545e1104f9256efe6caa0937062009e2b7b46ac73400d5fc14c6c2610",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "make-the-page-script-valid-so-the-folders-render",
+        "title": "Make the page script valid so the folders render",
+        "description": "Make the page script valid so the folders render",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "algit"
+        ],
+        "affected_paths": [
+          "py/algit/command.py"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A browser shows the folders and the open file.",
+          "The page script is valid JavaScript."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "algit": "d0594453d46485f24c74543fe041ad177775e946d8fbc7a3a7d552bf7d0941c1"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1792948374,
+      "digest": "6f1f73ad162d383c42f5ccb5acab70692ae0601dd46e6390690f9f33ebe22b41",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

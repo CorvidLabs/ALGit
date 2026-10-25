@@ -1,39 +1,31 @@
 # ALGit
 
-Pins files CorvidLabs already publishes to the CorvidLabs Pinata account.
+ALGit pushes a git repository to Algorand and lets you read it in a page on your own machine.
 
-You run it on your machine, against files you already have. The API key stays in `PINATA_JWT`. There is no website, no upload form, and no server.
+You run it locally. A push spends on LocalNet, and only after it has printed the fee and you pass `--yes`. Asking for MainNet prints the same cost and sends nothing. A blob over 256 KiB is pinned to the Pinata account in your `PINATA_JWT`, through `PINATA_GATEWAY`. The command has no Pinata account of its own.
 
-## Stack
+The page listens on `127.0.0.1`. It shows the commits, the files, and the diff of a commit.
 
-TypeScript on Bun. The Pinata client is the `pinata` package. The command is `algit pin`.
-
-AlgoNest is a different repo. It re-pins image and metadata files for NFTs that already exist. This repo does not change AlgoNest, `swift-pinata`, or `typescript-pinata`.
-
-The on-chain git remote was measured and left unbuilt. That record is in [docs/onchain-git-remote.md](docs/onchain-git-remote.md).
-
-## Free plan
-
-The default stop matches Pinata Free: 500 files, 1 GB of storage, 10 GB of bandwidth, 10,000 requests, and 1 gateway. One batch over 500 files or 1 GB is refused, and nothing is uploaded. `--paid` lifts that stop for the Picnic plan (1 TB, 10 million files).
-
-Bandwidth and request use are on the Pinata usage page. This command only counts the files in the batch you name.
+The on-chain measurement that came before this command is in [docs/onchain-git-remote.md](docs/onchain-git-remote.md).
 
 ## Use
 
 ```bash
-bun install
-cp .env.example .env
-# fill PINATA_JWT and PINATA_GATEWAY, then:
-export PINATA_JWT=...
-export PINATA_GATEWAY=your-gateway.mypinata.cloud
-bun run algit pin ./some-file.png ./some-directory
+python3 -m venv .venv
+.venv/bin/pip install -e .
+export PINATA_JWT=...            # only if a blob is over 256 KiB
+export PINATA_GATEWAY=your.gateway
+
+.venv/bin/algit push --repo . --network mainnet
+.venv/bin/algit push --repo . --yes
+.venv/bin/algit clone <mailbox> --into .algit/work
+.venv/bin/algit serve --repo .algit/work
 ```
 
-Each line is `cid`, bytes, gateway URL, and the local path.
+`push` prints the mailbox. `clone` checks the result with `git fsck`. `serve` prints a `http://127.0.0.1:` address.
 
 ```bash
-bun test
-bun run typecheck
+.venv/bin/python -m unittest discover -s tests
 ```
 
 ## License

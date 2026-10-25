@@ -1,0 +1,62 @@
+{
+  "timestamp": 1792947733,
+  "commit": "1548f750dac3ca9986715104bbc75b14b733db43",
+  "contract_digest": "7f28c29295fba7367f761198c4c02a7b04b2d3f5882bcfda32b7941f6f656989",
+  "execution_digest": "13a60f6d04865ccdf281974a027748d543b16feb29ff883aa8e0e1f71915a603",
+  "workspace_digest": "63fffc0e35c8318ca1745793959e5ce7a4c67c63a7457ec002223dd74a08f599",
+  "acceptance_input_digest": "51ebef60eea93b6ffdd36fd38a50d83bbeac8a4aa6e1b195eafe2114216d3768",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "py/algit/command.py",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ac46201edbfcf1cd20af31641537605516104596d90825f2adbfb76ee3f9c150",
+        "entry_digest": "19c316074cf2cfc324423c8d5b5a3ac80100c384317ade6173585b2d9402dbcd",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "specs/algit/algit.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "a68a13908ad62685b3dcfc54c56234a68012f035e950797ba48a714431bda312",
+        "entry_digest": "2a3f5f3900d858b57ed01b31bf2a27faa81daf764142bc66c76ae8334e8f3a62",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "specs/algit/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "79adfb723db1e2cbe44381a595bb759e07ead19149ab55df26c80676c9fb924f",
+        "entry_digest": "b25db2d801ea205b0adf7323ea170d2e470854e121ce0432f41714fa415bf27a",
+        "owners": [
+          "algit"
+        ]
+      },
+      {
+        "path": "tests/test_remote.py",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6f8db3e592b86badc99a5d5e7e9d311dd94ac77ed7a8f7a60fe32176ab196f11",
+        "entry_digest": "f6c1e75d2d47f08ff1bc7969c0a5b5b3c6c1ff4e12b9287835cc705fb23f0930",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec algit",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

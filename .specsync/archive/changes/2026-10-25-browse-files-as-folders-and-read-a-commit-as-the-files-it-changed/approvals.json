@@ -1,0 +1,49 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1792947674,
+      "digest": "7f28c29295fba7367f761198c4c02a7b04b2d3f5882bcfda32b7941f6f656989",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "browse-files-as-folders-and-read-a-commit-as-the-files-it-changed",
+        "title": "Browse files as folders and read a commit as the files it changed",
+        "description": "Browse files as folders and read a commit as the files it changed",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "algit"
+        ],
+        "affected_paths": [
+          "py/algit/command.py",
+          "tests/test_remote.py"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "I can browse the repository as folders.",
+          "I can open a file on its own.",
+          "I can read a commit as the files it changed."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "algit": "ea3b944146d75a0462ca97208bdf5bb960e4cf8fac8da6eead835357c2f140ca"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1792947817,
+      "digest": "8b0e6d60e105786f46cb90795aeb3c4c52b97e74044a0f8e5f547bbbdfb7c73d",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

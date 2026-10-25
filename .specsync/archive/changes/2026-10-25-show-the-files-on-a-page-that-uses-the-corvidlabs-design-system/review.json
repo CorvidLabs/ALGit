@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "show-the-files-on-a-page-that-uses-the-corvidlabs-design-system",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "c721321bba5a6444b40869345c52705fac847ac5",
+  "contract_digest": "85e59e9d52af2c6a5a5e83be00072045bed827366c76ce6572d4839d3880098f",
+  "execution_digest": "81ecc3db6d09cc2a23790690bcf45bff2f4cff5de5d6612ad30ee4d0337966c6",
+  "workspace_digest": "8b4cf36c59e13035c11d5ebd92295362dfc23ddc6492e651aeb024839992c87d",
+  "timestamp": 1792947227
+}

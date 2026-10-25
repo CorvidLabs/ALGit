@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "browse-files-as-folders-and-read-a-commit-as-the-files-it-changed",
+  "slug": "browse-files-as-folders-and-read-a-commit-as-the-files-it-changed",
+  "title": "Browse files as folders and read a commit as the files it changed",
+  "description": "Browse files as folders and read a commit as the files it changed",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "72a6bd9c029567db70a2508efb780070e30d9571",
+  "created_at": 1792947613,
+  "updated_at": 1792947878,
+  "affected_specs": [
+    "algit"
+  ],
+  "affected_paths": [
+    "py/algit/command.py",
+    "tests/test_remote.py"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "I can browse the repository as folders.",
+    "I can open a file on its own.",
+    "I can read a commit as the files it changed."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "yes"
+  }
+}

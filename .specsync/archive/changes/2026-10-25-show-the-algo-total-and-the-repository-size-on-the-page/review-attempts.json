@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "show-the-algo-total-and-the-repository-size-on-the-page",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "7a0a8b3307cf938d7b04b9e8fccf8e88e623ce7a",
+      "contract_digest": "1b38ed144b6d3d95c93030b70bbd1aaf15bb269acecba72a0073384dd2178312",
+      "execution_digest": "5b22b7621caa265d2269168ad498562975882844079dfbd3b0b527aa89d89040",
+      "workspace_digest": "fea18cc2124547b3871875ef57edec96475c4184dd8576ed60a9704c449cbf08",
+      "timestamp": 1792949066
+    }
+  ]
+}
