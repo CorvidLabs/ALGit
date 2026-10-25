@@ -206,7 +206,7 @@ class Page(unittest.TestCase):
     def test_page_shows_file_and_diff_on_loopback(self) -> None:
         # REQ-algit-4 REQ-algit-7
         with TemporaryDirectory() as tmp:
-            repo = make_repo(Path(tmp), {"README.md": b"hello page\n"})
+            repo = make_repo(Path(tmp), {"README.md": b"hello page\n", "src/a.txt": b"a\n"})
             httpd = serve(repo, port=0, mailbox="MAILBOXADDR", network="localnet", background=True)
             port = httpd.server_address[1]
             try:
@@ -215,6 +215,15 @@ class Page(unittest.TestCase):
                 self.assertIn("<main", html)
                 self.assertIn("Skip to the commit", html)
                 self.assertIn('type="module"', html)
+                self.assertIn("Find a file", html)
+                self.assertIn('createElement("details")', html)
+                with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/overview") as response:
+                    overview = json.load(response)
+                self.assertIn("src/a.txt", overview["files"])
+                self.assertTrue(any(node.get("name") == "src" and "children" in node for node in overview["tree"]))
+                with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/commit?rev=HEAD") as response:
+                    commit = json.load(response)
+                self.assertIn("README.md", [item["path"] for item in commit["files"]])
                 self.assertIn("/brand/tokens.css", html)
                 self.assertIn("Schibsted+Grotesk", html)
                 self.assertIn("data-corvid-theme-toggle", html)

@@ -290,7 +290,20 @@ def serve(repo: str, host: str = "127.0.0.1", port: int = 4711, mailbox: str = "
                 except (ValueError, RuntimeError) as exc:
                     self._send(400, "text/plain; charset=utf-8", str(exc).encode())
                     return
-                self._send(200, "application/octet-stream", body)
+                if b"\0" in body[:8192]:
+                    note = f"Binary file, {len(body)} bytes.".encode()
+                    self._send(200, "text/plain; charset=utf-8", note)
+                    return
+                self._send(200, "text/plain; charset=utf-8", body)
+                return
+            if parsed.path == "/api/commit":
+                rev = query.get("rev", ["HEAD"])[0]
+                try:
+                    payload = _commit_view(root, rev)
+                except (ValueError, RuntimeError) as exc:
+                    self._send(400, "text/plain; charset=utf-8", str(exc).encode())
+                    return
+                self._send(200, "application/json", json.dumps(payload).encode())
                 return
             if parsed.path == "/api/diff":
                 rev = query.get("rev", ["HEAD"])[0]
@@ -298,8 +311,12 @@ def serve(repo: str, host: str = "127.0.0.1", port: int = 4711, mailbox: str = "
                     self._send(400, "text/plain; charset=utf-8", b"bad revision")
                     return
                 try:
-                    body = _git(str(root), "show", "--format=fuller", "--unified=3", rev)
-                except RuntimeError as exc:
+                    show = ["show", "--format=", "--unified=3", rev]
+                    asked = query.get("path", [""])[0]
+                    if asked:
+                        show.extend(["--", _safe_path(asked)])
+                    body = _git(str(root), *show)
+                except (ValueError, RuntimeError) as exc:
                     self._send(400, "text/plain; charset=utf-8", str(exc).encode())
                     return
                 self._send(200, "text/plain; charset=utf-8", body)
@@ -836,7 +853,54 @@ def _overview(root: Path, receipt: dict) -> dict:
         "network": receipt.get("network", ""),
         "commits": commits,
         "files": files,
+        "tree": _file_tree(files),
     }
+
+
+def _file_tree(paths: list[str]) -> list[dict]:
+    """Nested folders. Each node is a directory `{name, children}` or a file `{name, path}`."""
+    root: dict = {"children": []}
+
+    def directory(node: dict, name: str) -> dict:
+        for child in node["children"]:
+            if "children" in child and child["name"] == name:
+                return child
+        made = {"name": name, "children": []}
+        node["children"].append(made)
+        return made
+
+    for path in paths:
+        parts = path.split("/")
+        node = root
+        for name in parts[:-1]:
+            node = directory(node, name)
+        node["children"].append({"name": parts[-1], "path": path})
+    _sort_tree(root["children"])
+    return root["children"]
+
+
+def _sort_tree(nodes: list[dict]) -> None:
+    nodes.sort(key=lambda item: (0 if "children" in item else 1, item["name"]))
+    for item in nodes:
+        if "children" in item:
+            _sort_tree(item["children"])
+
+
+def _commit_view(root: Path, rev: str) -> dict:
+    if not _hexish(rev):
+        raise ValueError("bad revision")
+    raw = _git(str(root), "show", "--name-status", "--format=%H%x1f%an%x1f%at%x1f%s", rev).decode()
+    lines = raw.splitlines()
+    if not lines or "\x1f" not in lines[0]:
+        raise RuntimeError("commit has no header")
+    oid, author, when, subject = lines[0].split("\x1f", 3)
+    files = []
+    for line in lines[1:]:
+        if not line.strip():
+            continue
+        bits = line.split("\t")
+        files.append({"status": bits[0], "path": bits[-1]})
+    return {"id": oid, "author": author, "at": int(when), "subject": subject, "files": files}
 
 
 def _safe_path(path: str) -> str:
@@ -885,6 +949,10 @@ PAGE = """<!DOCTYPE html>
       font-family: var(--font-display);
       font-size: 1.05rem;
       line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
     }
     .visually-hidden:where(:not(:focus-within, :active)) {
       position: absolute !important;
@@ -935,37 +1003,86 @@ PAGE = """<!DOCTYPE html>
       display: grid;
       grid-template-columns: 18rem minmax(0, 1fr);
       grid-template-areas: "rail main";
-      min-height: calc(100dvh - 4.5rem);
+      flex: 1;
+      min-height: 0;
     }
     .rail { grid-area: rail; }
     main { grid-area: main; }
     @media (max-width: 40rem) {
+      body { height: auto; overflow: auto; }
       .top { flex-wrap: wrap; }
       .mailbox { margin-inline-start: 0; max-width: none; }
       .shell {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-areas:
-          "rail"
-          "main";
+        display: block;
+        height: auto;
       }
+      .rail { max-height: 50dvh; }
     }
     .rail {
       background: var(--surface);
       border-inline-end: 1px solid var(--hairline);
-      padding: 1rem 1rem 2rem;
+      padding: 0.75rem 0.8rem 1.5rem;
+      overflow: auto;
+      min-height: 0;
+      min-width: 0;
     }
-    .rail h2 { font-size: 0.95rem; font-weight: 700; margin: 1rem 0 0.35rem; }
+    .find { display: block; margin: 0 0 0.8rem; font-size: 0.85rem; }
+    .find input {
+      display: block;
+      width: 100%;
+      margin-top: 0.25rem;
+      min-block-size: 1.75rem;
+      padding: 0.2rem 0.4rem;
+      font: inherit;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--hairline);
+    }
+    .rail h2 { font-size: 0.95rem; font-weight: 700; margin: 0.8rem 0 0.35rem; }
     .rail ul { list-style: none; margin: 0; padding: 0; }
-    .rail a {
+    .rail li { min-width: 0; }
+    .rail a, .rail summary {
       display: block;
       min-block-size: 1.5rem;
-      padding: 0.28rem 0;
+      padding: 0.2rem 0;
       color: var(--ink);
       text-decoration: none;
-      overflow-wrap: anywhere;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .rail a[aria-current="page"] { color: var(--sheen-strong); }
-    main { padding: 1.5rem 1.6rem 3rem; min-width: 0; }
+    .tree .nest { padding-inline-start: 0.85rem; }
+    @supports selector(details::details-content) {
+      .tree details::details-content { padding-inline-start: 0.85rem; }
+      .tree .nest { padding-inline-start: 0; }
+    }
+    details[open] > summary { color: var(--sheen-strong); }
+    main { padding: 1.25rem 1.5rem 2.5rem; min-width: 0; overflow: auto; min-height: 0; }
+    #crumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0 0 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-faint);
+    }
+    .changed { list-style: none; margin: 0; padding: 0; }
+    .changed a { color: var(--sheen-strong); }
+    .diff .add { color: var(--success); }
+    .diff .del { color: var(--danger); }
+    .diff .hunk { color: var(--sheen-strong); }
+    .ln {
+      display: inline-block;
+      width: 3rem;
+      margin-inline-end: 0.8rem;
+      color: var(--text-faint);
+      text-align: end;
+      user-select: none;
+    }
     h1 {
       font-family: var(--font-display);
       font-weight: 700;
@@ -979,8 +1096,8 @@ PAGE = """<!DOCTYPE html>
       padding: 1rem;
       background: var(--surface);
       border: 1px solid var(--hairline);
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+      white-space: pre;
+      overflow: auto;
       font-family: var(--font-mono);
       font-size: 0.86rem;
       line-height: 1.45;
@@ -1033,15 +1150,19 @@ PAGE = """<!DOCTYPE html>
   <div class="sheen-rule" aria-hidden="true"></div>
   <div class="shell">
     <nav class="rail" aria-label="Repository">
+      <label class="find">Find a file
+        <input id="find" type="search" autocomplete="off">
+      </label>
       <h2>Files</h2>
-      <ul id="files"></ul>
+      <div id="files"></div>
       <h2>Commits</h2>
       <ul id="commits"></ul>
     </nav>
     <main id="content" tabindex="-1">
+      <nav id="crumbs" aria-label="Path"></nav>
       <h1 id="subject"></h1>
       <p id="meta"></p>
-      <pre id="body"></pre>
+      <div id="body"></div>
     </main>
   </div>
   <script defer src="/brand/theme.js"></script>
@@ -1052,64 +1173,203 @@ PAGE = """<!DOCTYPE html>
     const subject = document.getElementById("subject");
     const meta = document.getElementById("meta");
     const body = document.getElementById("body");
+    const crumbs = document.getElementById("crumbs");
     const branch = document.getElementById("branch");
     const mailbox = document.getElementById("mailbox");
-
-    function link(parent, label, onClick) {
-      const item = document.createElement("li");
-      const anchor = document.createElement("a");
-      anchor.href = "#";
-      anchor.textContent = label;
-      anchor.addEventListener("click", (event) => {
-        event.preventDefault();
-        onClick(anchor);
-      });
-      item.append(anchor);
-      parent.append(item);
-      return anchor;
-    }
+    const find = document.getElementById("find");
+    let tree = [];
+    let fileAnchor = null;
 
     function mark(anchor) {
       for (const node of document.querySelectorAll(".rail a")) node.removeAttribute("aria-current");
-      anchor.setAttribute("aria-current", "page");
+      if (anchor) anchor.setAttribute("aria-current", "page");
+    }
+
+    function setCrumbs(path) {
+      crumbs.replaceChildren();
+      if (!path) return;
+      path.split("/").forEach((part, index) => {
+        if (index) {
+          const sep = document.createElement("span");
+          sep.textContent = "/";
+          crumbs.append(sep);
+        }
+        const bit = document.createElement("span");
+        bit.textContent = part;
+        crumbs.append(bit);
+      });
+    }
+
+    function clearReading() {
+      body.replaceChildren();
+    }
+
+    function showLines(text) {
+      clearReading();
+      const pre = document.createElement("pre");
+      pre.className = "file";
+      text.split("\n").forEach((line, index) => {
+        const row = document.createElement("span");
+        const number = document.createElement("span");
+        number.className = "ln";
+        number.textContent = String(index + 1);
+        const code = document.createElement("span");
+        code.textContent = line.length ? line : " ";
+        row.append(number, code, document.createTextNode("\n"));
+        pre.append(row);
+      });
+      body.append(pre);
+    }
+
+    function showPatch(text) {
+      clearReading();
+      const pre = document.createElement("pre");
+      pre.className = "diff";
+      for (const line of text.split("\n")) {
+        const span = document.createElement("span");
+        span.textContent = line + "\n";
+        if (line.startsWith("+++") || line.startsWith("---")) span.className = "hunk";
+        else if (line.startsWith("+")) span.className = "add";
+        else if (line.startsWith("-")) span.className = "del";
+        else if (line.startsWith("@@")) span.className = "hunk";
+        pre.append(span);
+      }
+      body.append(pre);
     }
 
     async function showFile(path, anchor) {
-      mark(anchor);
+      fileAnchor = anchor || fileAnchor;
+      mark(fileAnchor);
+      setCrumbs(path);
       const response = await fetch("/api/file?path=" + encodeURIComponent(path));
-      subject.textContent = path;
+      subject.textContent = path.split("/").pop();
       meta.textContent = receipt.network ? receipt.network : "";
-      body.textContent = await response.text();
+      showLines(await response.text());
+    }
+
+    async function showDiff(rev, path) {
+      setCrumbs(path);
+      const response = await fetch("/api/diff?rev=" + encodeURIComponent(rev) + "&path=" + encodeURIComponent(path));
+      subject.textContent = path.split("/").pop();
+      showPatch(await response.text());
     }
 
     async function showCommit(commit, anchor) {
       mark(anchor);
-      const response = await fetch("/api/diff?rev=" + encodeURIComponent(commit.id));
-      subject.textContent = commit.subject;
-      const when = new Date(commit.at * 1000);
-      meta.textContent = commit.author + ", " + when.toLocaleString();
-      body.textContent = await response.text();
+      fileAnchor = null;
+      setCrumbs("");
+      const response = await fetch("/api/commit?rev=" + encodeURIComponent(commit.id));
+      if (!response.ok) {
+        subject.textContent = commit.subject;
+        showLines(await response.text());
+        return;
+      }
+      const data = await response.json();
+      subject.textContent = data.subject;
+      meta.textContent = data.author + ", " + new Date(data.at * 1000).toLocaleString();
+      clearReading();
+      const list = document.createElement("ul");
+      list.className = "changed";
+      for (const file of data.files) {
+        const item = document.createElement("li");
+        const anchorFile = document.createElement("a");
+        anchorFile.href = "#";
+        anchorFile.textContent = file.status + "  " + file.path;
+        anchorFile.addEventListener("click", (event) => {
+          event.preventDefault();
+          showDiff(data.id, file.path);
+        });
+        item.append(anchorFile);
+        list.append(item);
+      }
+      if (!data.files.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "This commit does not change a file.";
+        body.append(empty);
+      }
+      body.append(list);
+    }
+
+    function fileLink(parent, file) {
+      const item = document.createElement("li");
+      const anchor = document.createElement("a");
+      anchor.href = "#";
+      anchor.textContent = file.name;
+      anchor.addEventListener("click", (event) => {
+        event.preventDefault();
+        showFile(file.path, anchor);
+      });
+      item.append(anchor);
+      parent.append(item);
+      if (file.path === "README.md") fileAnchor = anchor;
+    }
+
+    function renderTree(nodes, host, depth, query) {
+      const list = document.createElement("ul");
+      list.className = "tree";
+      const needle = query.trim().toLowerCase();
+      for (const node of nodes) {
+        if (node.children) {
+          const kept = filterNode(node, needle);
+          if (!kept) continue;
+          const item = document.createElement("li");
+          const details = document.createElement("details");
+          if (depth < 1 || needle) details.open = true;
+          const summary = document.createElement("summary");
+          summary.textContent = node.name;
+          details.append(summary);
+          const nest = document.createElement("div");
+          nest.className = "nest";
+          renderTree(node.children, nest, depth + 1, query);
+          details.append(nest);
+          item.append(details);
+          list.append(item);
+        } else if (!needle || node.path.toLowerCase().includes(needle) || node.name.toLowerCase().includes(needle)) {
+          fileLink(list, node);
+        }
+      }
+      if (list.childElementCount) host.append(list);
+    }
+
+    function filterNode(node, needle) {
+      if (!needle) return true;
+      if (!node.children) return node.path.toLowerCase().includes(needle);
+      return node.children.some((child) => filterNode(child, needle));
+    }
+
+    function drawTree(query) {
+      files.replaceChildren();
+      renderTree(tree, files, 0, query);
     }
 
     const overviewResponse = await fetch("/api/overview");
     if (!overviewResponse.ok) {
       subject.textContent = "The repository did not load.";
-      body.textContent = await overviewResponse.text();
+      showLines(await overviewResponse.text());
       throw new Error("overview");
     }
     const overview = await overviewResponse.json();
+    tree = overview.tree || [];
     branch.textContent = overview.branch;
     mailbox.textContent = overview.mailbox || "This page is on this machine.";
     document.title = overview.branch + " · ALGit";
-    let first = null;
-    for (const path of overview.files) {
-      link(files, path, (anchor) => showFile(path, anchor));
-    }
+    drawTree("");
+    find.addEventListener("input", () => drawTree(find.value));
     for (const commit of overview.commits) {
-      const anchor = link(commits, commit.subject, (node) => showCommit(commit, node));
-      if (!first) first = { commit, anchor };
+      const item = document.createElement("li");
+      const anchor = document.createElement("a");
+      anchor.href = "#";
+      anchor.textContent = commit.subject;
+      anchor.addEventListener("click", (event) => {
+        event.preventDefault();
+        showCommit(commit, anchor);
+      });
+      item.append(anchor);
+      commits.append(item);
     }
-    if (first) showCommit(first.commit, first.anchor);
+    if (overview.files.includes("README.md")) showFile("README.md", fileAnchor);
+    else if (overview.files.length) showFile(overview.files[0], null);
+    else if (overview.commits.length) showCommit(overview.commits[0], commits.querySelector("a"));
   </script>
 </body>
 </html>
