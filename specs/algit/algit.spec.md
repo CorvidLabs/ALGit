@@ -6,6 +6,9 @@ files:
   - py/algit/__init__.py
   - py/algit/__main__.py
   - py/algit/command.py
+  - py/algit/brand/tokens.css
+  - py/algit/brand/theme.js
+  - py/algit/brand/logo-mark.svg
 ---
 
 # algit
