@@ -1208,14 +1208,14 @@ PAGE = """<!DOCTYPE html>
       clearReading();
       const pre = document.createElement("pre");
       pre.className = "file";
-      text.split("\n").forEach((line, index) => {
+      text.split(String.fromCharCode(10)).forEach((line, index) => {
         const row = document.createElement("span");
         const number = document.createElement("span");
         number.className = "ln";
         number.textContent = String(index + 1);
         const code = document.createElement("span");
         code.textContent = line.length ? line : " ";
-        row.append(number, code, document.createTextNode("\n"));
+        row.append(number, code, document.createTextNode(String.fromCharCode(10)));
         pre.append(row);
       });
       body.append(pre);
@@ -1225,9 +1225,9 @@ PAGE = """<!DOCTYPE html>
       clearReading();
       const pre = document.createElement("pre");
       pre.className = "diff";
-      for (const line of text.split("\n")) {
+      for (const line of text.split(String.fromCharCode(10))) {
         const span = document.createElement("span");
-        span.textContent = line + "\n";
+        span.textContent = line + String.fromCharCode(10);
         if (line.startsWith("+++") || line.startsWith("---")) span.className = "hunk";
         else if (line.startsWith("+")) span.className = "add";
         else if (line.startsWith("-")) span.className = "del";
@@ -1342,7 +1342,9 @@ PAGE = """<!DOCTYPE html>
       renderTree(tree, files, 0, query);
     }
 
-    const overviewResponse = await fetch("/api/overview");
+    let overviewResponse;
+    try {
+    overviewResponse = await fetch("/api/overview");
     if (!overviewResponse.ok) {
       subject.textContent = "The repository did not load.";
       showLines(await overviewResponse.text());
@@ -1370,6 +1372,10 @@ PAGE = """<!DOCTYPE html>
     if (overview.files.includes("README.md")) showFile("README.md", fileAnchor);
     else if (overview.files.length) showFile(overview.files[0], null);
     else if (overview.commits.length) showCommit(overview.commits[0], commits.querySelector("a"));
+    } catch (error) {
+      subject.textContent = "The page script failed.";
+      meta.textContent = error && error.message ? error.message : String(error);
+    }
   </script>
 </body>
 </html>
