@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1794580475,
+      "commit": "8d4392211dd368eb4a07f9e419ed60999327f293",
+      "contract_digest": "a98b653c5e84e4f8808e4e71006532659d5c80f058bace841d196ea2025eb727",
+      "execution_digest": "3d9292b5951498c792a830e946e46a8cbb91b66b576aeabadd00c152c0795f91",
+      "workspace_digest": "03a081f4499dfaad142816d08b3b4467f44d273811b11eceac70aa3f71e3cc07",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1794580475,
+      "commit": "0b87b5cb45fa50027cd4b92efecbdfd9e73e3d6a",
+      "contract_digest": "a98b653c5e84e4f8808e4e71006532659d5c80f058bace841d196ea2025eb727",
+      "execution_digest": "3d9292b5951498c792a830e946e46a8cbb91b66b576aeabadd00c152c0795f91",
+      "workspace_digest": "03a081f4499dfaad142816d08b3b4467f44d273811b11eceac70aa3f71e3cc07",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1794580475,
+      "commit": "ad23b4d8ac54115608da65cc4219ec73ec2eb5a5",
+      "contract_digest": "a98b653c5e84e4f8808e4e71006532659d5c80f058bace841d196ea2025eb727",
+      "execution_digest": "3d9292b5951498c792a830e946e46a8cbb91b66b576aeabadd00c152c0795f91",
+      "workspace_digest": "03a081f4499dfaad142816d08b3b4467f44d273811b11eceac70aa3f71e3cc07",
+      "acceptance_input_digest": "dcbb32810b4e326f3dd7d1d49150faf43a8ae6171d2ec7533f68282c62c66b1a",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".specsync/sdd.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "dd0fe2fa2a963dcd8d0e171772f3394e502cd464f8957ed9cb10b00f5c3a3e9e",
+            "entry_digest": "5ef3a328a77f5f6218fa823abd1d0b814274b6363e265fc466e361f14f5bf7c1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}
